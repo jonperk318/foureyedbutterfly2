@@ -1,21 +1,38 @@
-@import "tailwindcss" source("../");
-
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+@import "tailwindcss";
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "valentine";
+  default: true;
+}
+@plugin "daisyui/theme" {
+  name: "sunset";
+  default: false;
+  prefersdark: true;
 }
 
-html {
-  color-scheme: light dark;
+@custom-variant light (&where([data-theme=valentine], [data-theme=valentine] *));
+@custom-variant dark (&where([data-theme=sunset], [data-theme=sunset] *));
+
+@font-face {
+  font-family: 'AdornCopperplate';
+  font-display: swap;
+  src: url('/fonts/adorn-copperplate.otf');
 }
-* {
-  @apply border-gray-200 dark:border-gray-800;
+
+@font-face {
+  font-family: 'MenoBanner';
+  font-display: swap;
+  src: url('/fonts/meno-banner.otf');
 }
-body {
-  @apply bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-200;
+
+@font-face {
+  font-family: 'RoyaltyFree';
+  font-display: swap;
+  src: url('/fonts/royalty-free.otf');
+}
+
+@theme {
+  --font-adorn-copperplate: "AdornCopperplate", sans-serif;
+  --font-meno-banner: "MenoBanner", sans-serif;
+  --font-royalty-free: "RoyaltyFree", sans-serif;
 }

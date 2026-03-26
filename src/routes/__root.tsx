@@ -6,11 +6,12 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-import { Spinner } from "./-components/spinner";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
-import type { AppRouter } from "../server/trpc";
 import type { QueryClient } from "@tanstack/react-query";
+import { Sun, Moon } from "lucide-react";
+
+import type { AppRouter } from "../server/trpc";
+import { useTheme } from "../utils/theme-context";
 
 export interface RouterAppContext {
   trpc: TRPCOptionsProxy<AppRouter>;
@@ -19,60 +20,56 @@ export interface RouterAppContext {
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootComponent,
+  pendingComponent: () => (<div className="loading-spinner"></div>),
 });
+
+type NavigationItem = {
+  name: string;
+  to?: string;
+  color: string;
+}
 
 function RootComponent() {
   const isFetching = useRouterState({ select: (s) => s.isLoading });
+  const { isLight, toggleIsLight } = useTheme();
+
+  const navigation = [
+    { name: "Home", to: "/", color: "text-primary", },
+    { name: "About", to: "/about", color: "text-primary", },
+    { name: "Posts", to: "/posts", color: "text-primary", },
+    { name: "Login", to: "/login", color: "text-secondary", },
+    { name: "Logout", color: "text-secondary", },
+    { name: "Write", to: "/write", color: "text-secondary", },
+  ].filter(Boolean) as NavigationItem[];
 
   return (
     <>
-      <div className={`min-h-screen flex flex-col`}>
-        <div className={`flex items-center border-b gap-2`}>
-          <h1 className={`text-3xl p-2`}>With tRPC + TanStack Query</h1>
-          {/* Show a global spinner when the router is transitioning */}
-          <div
-            className={`text-3xl duration-300 delay-0 opacity-0 ${
-              isFetching ? ` duration-1000 opacity-40` : ""
-            }`}
-          >
-            <Spinner />
+      <div className={`min-h-screen bg-base-300`}>
+        <div className="navbar bg-base-100 p-4">
+          <div className="flex-1">
+            <div className="font-royalty-free text-4xl">Four Eyed Butterfly</div>
           </div>
-        </div>
-        <div className={`flex-1 flex`}>
-          <div className={`divide-y w-56`}>
-            {(
-              [
-                ["/", "Home"],
-                ["/dashboard", "Dashboard"],
-              ] as const
-            ).map(([to, label]) => {
-              return (
-                <div key={to}>
-                  <Link
-                    to={to}
-                    activeOptions={
-                      {
-                        // If the route points to the root of it's parent,
-                        // make sure it's only active if it's exact
-                        // exact: to === '.',
-                      }
-                    }
-                    preload="intent"
-                    className={`block py-2 px-3 text-blue-700`}
-                    // Make "active" links bold
-                    activeProps={{ className: `font-bold` }}
-                  >
-                    {label}
-                  </Link>
+          <div className="flex gap-8 flex-none">
+            {
+              navigation.map(elm => (
+                <div key={elm.name} className={`${elm.color}`}>
+                  {elm.name}
                 </div>
-              );
-            })}
-          </div>
-          <div className={`flex-1 border-l border-gray-200`}>
-            {/* Render our first route match */}
-            <Outlet />
+              ))
+            }
+            { /* Theme toggle */ }
+            <label className="swap swap-rotate text-primary">
+              <input type="checkbox" className="theme-controller" value="valentine" checked={isLight} onClick={toggleIsLight} readOnly/>
+              <Sun className="swap-off" />
+              <Moon className="swap-on" />
+            </label>
           </div>
         </div>
+        {isFetching ? (
+          <div className="loading-spinner"></div>
+        ) : (
+          <Outlet/>
+        )}
       </div>
       <TanStackRouterDevtools position="bottom-left" />
       <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />

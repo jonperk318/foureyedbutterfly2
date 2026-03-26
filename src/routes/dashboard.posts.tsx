@@ -15,7 +15,6 @@ export const Route = createFileRoute("/dashboard/posts")({
     await queryClient.ensureQueryData(trpc.posts.queryOptions());
     return;
   },
-  pendingComponent: Spinner,
   component: DashboardPostsComponent,
 });
 
