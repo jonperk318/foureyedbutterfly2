@@ -23,6 +23,7 @@
     "@trpc/tanstack-react-query": "^11.4.3",
     "express": "^4.21.2",
     "lucide-react": "^1.7.0",
+    "motion": "^12.38.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "redaxios": "^0.5.1",

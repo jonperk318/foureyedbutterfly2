@@ -8,9 +8,9 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
 
   const toggleIsLight = () => {
     setIsLight(!isLight);
-  }
+  };
 
   return (
-    <ThemeContext value={{ isLight, toggleIsLight}}>{children}</ThemeContext>
-  )
-}
+    <ThemeContext value={{ isLight, toggleIsLight }}>{children}</ThemeContext>
+  );
+};

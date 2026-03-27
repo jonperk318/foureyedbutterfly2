@@ -4,7 +4,7 @@ type ImageProps = {
   src: string;
   className: string;
   alt: string;
-}
+};
 
 const Image = ({ src, className, alt }: ImageProps) => {
   return (

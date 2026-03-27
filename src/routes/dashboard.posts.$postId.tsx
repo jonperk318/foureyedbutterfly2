@@ -12,7 +12,7 @@ export const Route = createFileRoute("/dashboard/posts/$postId")({
   loader: async ({ context: { trpc, queryClient }, params: { postId } }) => {
     await queryClient.ensureQueryData(trpc.post.queryOptions(postId));
   },
-  pendingComponent: () => (<div className="loading-spinner"></div>),
+  pendingComponent: () => <div className="loading-spinner"></div>,
   component: DashboardPostsPostIdComponent,
 });
 

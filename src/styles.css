@@ -14,21 +14,22 @@
 @custom-variant dark (&where([data-theme=sunset], [data-theme=sunset] *));
 
 @font-face {
-  font-family: 'AdornCopperplate';
+  font-family: "AdornCopperplate";
   font-display: swap;
-  src: url('/fonts/adorn-copperplate.otf');
+  src: url("/fonts/adorn-copperplate.otf");
 }
 
 @font-face {
-  font-family: 'MenoBanner';
+  font-family: "MenoBanner";
   font-display: swap;
-  src: url('/fonts/meno-banner.otf');
+  size-adjust: 150%;
+  src: url("/fonts/meno-banner.otf");
 }
 
 @font-face {
-  font-family: 'RoyaltyFree';
+  font-family: "RoyaltyFree";
   font-display: swap;
-  src: url('/fonts/royalty-free.otf');
+  src: url("/fonts/royalty-free.otf");
 }
 
 @theme {

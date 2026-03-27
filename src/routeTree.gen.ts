@@ -9,16 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as WriteRouteImport } from './routes/write'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as PostsYearRouteImport } from './routes/posts.$year'
 import { Route as DashboardPostsRouteImport } from './routes/dashboard.posts'
-import { Route as DashboardPostsIndexRouteImport } from './routes/dashboard.posts.index'
+import { Route as PostsYearPostIdRouteImport } from './routes/posts.$year.$postId'
 import { Route as DashboardPostsPostIdRouteImport } from './routes/dashboard.posts.$postId'
 
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const WriteRoute = WriteRouteImport.update({
+  id: '/write',
+  path: '/write',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,15 +44,20 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const PostsYearRoute = PostsYearRouteImport.update({
+  id: '/posts/$year',
+  path: '/posts/$year',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardPostsRoute = DashboardPostsRouteImport.update({
   id: '/posts',
   path: '/posts',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardPostsIndexRoute = DashboardPostsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardPostsRoute,
+const PostsYearPostIdRoute = PostsYearPostIdRouteImport.update({
+  id: '/$postId',
+  path: '/$postId',
+  getParentRoute: () => PostsYearRoute,
 } as any)
 const DashboardPostsPostIdRoute = DashboardPostsPostIdRouteImport.update({
   id: '/$postId',
@@ -49,60 +67,103 @@ const DashboardPostsPostIdRoute = DashboardPostsPostIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteWithChildren
+  '/about': typeof AboutRoute
+  '/login': typeof LoginRoute
+  '/write': typeof WriteRoute
   '/dashboard/posts': typeof DashboardPostsRouteWithChildren
+  '/posts/$year': typeof PostsYearRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
-  '/dashboard/posts/': typeof DashboardPostsIndexRoute
+  '/posts/$year/$postId': typeof PostsYearPostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/login': typeof LoginRoute
+  '/write': typeof WriteRoute
+  '/dashboard/posts': typeof DashboardPostsRouteWithChildren
+  '/posts/$year': typeof PostsYearRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
-  '/dashboard/posts': typeof DashboardPostsIndexRoute
+  '/posts/$year/$postId': typeof PostsYearPostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteWithChildren
+  '/about': typeof AboutRoute
+  '/login': typeof LoginRoute
+  '/write': typeof WriteRoute
   '/dashboard/posts': typeof DashboardPostsRouteWithChildren
+  '/posts/$year': typeof PostsYearRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
-  '/dashboard/posts/': typeof DashboardPostsIndexRoute
+  '/posts/$year/$postId': typeof PostsYearPostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
+    | '/about'
+    | '/login'
+    | '/write'
     | '/dashboard/posts'
+    | '/posts/$year'
     | '/dashboard/'
     | '/dashboard/posts/$postId'
-    | '/dashboard/posts/'
+    | '/posts/$year/$postId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/dashboard/posts/$postId' | '/dashboard/posts'
+  to:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/write'
+    | '/dashboard/posts'
+    | '/posts/$year'
+    | '/dashboard'
+    | '/dashboard/posts/$postId'
+    | '/posts/$year/$postId'
   id:
     | '__root__'
     | '/'
-    | '/dashboard'
+    | '/about'
+    | '/login'
+    | '/write'
     | '/dashboard/posts'
+    | '/posts/$year'
     | '/dashboard/'
     | '/dashboard/posts/$postId'
-    | '/dashboard/posts/'
+    | '/posts/$year/$postId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  LoginRoute: typeof LoginRoute
+  WriteRoute: typeof WriteRoute
+  PostsYearRoute: typeof PostsYearRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/write': {
+      id: '/write'
+      path: '/write'
+      fullPath: '/write'
+      preLoaderRoute: typeof WriteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -119,6 +180,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/posts/$year': {
+      id: '/posts/$year'
+      path: '/posts/$year'
+      fullPath: '/posts/$year'
+      preLoaderRoute: typeof PostsYearRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/posts': {
       id: '/dashboard/posts'
       path: '/posts'
@@ -126,12 +194,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPostsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/posts/': {
-      id: '/dashboard/posts/'
-      path: '/'
-      fullPath: '/dashboard/posts/'
-      preLoaderRoute: typeof DashboardPostsIndexRouteImport
-      parentRoute: typeof DashboardPostsRoute
+    '/posts/$year/$postId': {
+      id: '/posts/$year/$postId'
+      path: '/$postId'
+      fullPath: '/posts/$year/$postId'
+      preLoaderRoute: typeof PostsYearPostIdRouteImport
+      parentRoute: typeof PostsYearRoute
     }
     '/dashboard/posts/$postId': {
       id: '/dashboard/posts/$postId'
@@ -143,37 +211,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DashboardPostsRouteChildren {
-  DashboardPostsPostIdRoute: typeof DashboardPostsPostIdRoute
-  DashboardPostsIndexRoute: typeof DashboardPostsIndexRoute
+interface PostsYearRouteChildren {
+  PostsYearPostIdRoute: typeof PostsYearPostIdRoute
 }
 
-const DashboardPostsRouteChildren: DashboardPostsRouteChildren = {
-  DashboardPostsPostIdRoute: DashboardPostsPostIdRoute,
-  DashboardPostsIndexRoute: DashboardPostsIndexRoute,
+const PostsYearRouteChildren: PostsYearRouteChildren = {
+  PostsYearPostIdRoute: PostsYearPostIdRoute,
 }
 
-const DashboardPostsRouteWithChildren = DashboardPostsRoute._addFileChildren(
-  DashboardPostsRouteChildren,
-)
-
-interface DashboardRouteChildren {
-  DashboardPostsRoute: typeof DashboardPostsRouteWithChildren
-  DashboardIndexRoute: typeof DashboardIndexRoute
-}
-
-const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardPostsRoute: DashboardPostsRouteWithChildren,
-  DashboardIndexRoute: DashboardIndexRoute,
-}
-
-const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
-  DashboardRouteChildren,
+const PostsYearRouteWithChildren = PostsYearRoute._addFileChildren(
+  PostsYearRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRouteWithChildren,
+  AboutRoute: AboutRoute,
+  LoginRoute: LoginRoute,
+  WriteRoute: WriteRoute,
+  PostsYearRoute: PostsYearRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
