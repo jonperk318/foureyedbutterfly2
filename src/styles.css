@@ -23,7 +23,14 @@
   font-family: "MenoBanner";
   font-display: swap;
   size-adjust: 150%;
-  src: url("/fonts/meno-banner.otf");
+  src: url("/fonts/meno-banner-regular.otf");
+}
+
+@font-face {
+  font-family: "MenoBannerBold";
+  font-display: swap;
+  size-adjust: 150%;
+  src: url("/fonts/meno-banner-bold.otf");
 }
 
 @font-face {
@@ -35,5 +42,6 @@
 @theme {
   --font-adorn-copperplate: "AdornCopperplate", sans-serif;
   --font-meno-banner: "MenoBanner", sans-serif;
+  --font-meno-banner-bold: "MenoBannerBold", sans-serif;
   --font-royalty-free: "RoyaltyFree", sans-serif;
 }

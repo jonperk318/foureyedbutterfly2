@@ -29,11 +29,14 @@ function RootComponent() {
   const { isLight, toggleIsLight } = useTheme();
 
   const fadeInInterval = 0.05;
+  const activeProps = {
+    className: `font-meno-banner-bold`
+  }
 
   return (
     <>
-      <div className={`min-h-screen bg-base-200 font-meno-banner`}>
-        <div className="navbar h-30 bg-base-100 py-4 px-8">
+      <div className={`min-h-screen bg-base-100 font-meno-banner`}>
+        <div className="navbar h-30 bg-base-200 py-4 px-8 shadow-lg">
           <div className="flex-1">
             <div className="font-royalty-free text-4xl">
               Four Eyed Butterfly
@@ -42,38 +45,36 @@ function RootComponent() {
           <div className="flex gap-12 flex-none">
             <FadeInDiv delay={0}>
               <Link
-                className="text-primary hover:text-info"
+                className="text-primary hover:text-accent"
                 to="/"
-                activeProps={{ className: `font-extrabold` }}
+                activeProps={activeProps}
               >
                 Home
               </Link>
             </FadeInDiv>
             <FadeInDiv delay={fadeInInterval}>
               <Link
-                className="text-primary hover:text-info"
+                className="text-primary hover:text-accent"
                 to="/about"
-                activeProps={{ className: `font-extrabold` }}
+                activeProps={activeProps}
               >
                 About
               </Link>
             </FadeInDiv>
             <FadeInDiv delay={fadeInInterval * 2}>
-              <div className="text-primary hover:text-info dropdown dropdown-center">
-                <div tabIndex={0} className="cursor-pointer">
-                  Posts
-                </div>
+              <div className="text-primary hover:text-accent dropdown dropdown-hover dropdown-center">
+                <div tabIndex={0} role="button" className="cursor-pointer mb-2">Posts</div>
                 <ul
                   tabIndex={-1}
-                  className="menu dropdown-content bg-base-300 rounded-box p-2 mt-3"
+                  className="dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-20 shadow"
                 >
                   <li>
-                    <Link to="/posts/2025" className={`text-primary`}>
+                    <Link to="/posts/2025" className={`text-primary`} activeProps={activeProps}>
                       2025
                     </Link>
                   </li>
                   <li>
-                    <Link to="/posts/2026" className={`text-primary`}>
+                    <Link to="/posts/2026" className={`text-primary`} activeProps={activeProps}>
                       2026
                     </Link>
                   </li>
@@ -82,30 +83,30 @@ function RootComponent() {
             </FadeInDiv>
             <FadeInDiv delay={fadeInInterval * 5}>
               <Link
-                className="text-secondary hover:text-info"
+                className="text-secondary hover:text-accent"
                 to="/login"
-                activeProps={{ className: `font-extrabold` }}
+                activeProps={activeProps}
               >
                 Login
               </Link>
             </FadeInDiv>
             <FadeInDiv delay={fadeInInterval * 6}>
               <Link
-                className="text-secondary hover:text-info"
+                className="text-secondary hover:text-accent"
                 to="/write"
-                activeProps={{ className: `font-extrabold` }}
+                activeProps={activeProps}
               >
                 Write
               </Link>
             </FadeInDiv>
             <FadeInDiv delay={fadeInInterval * 7}>
-              <Link className="text-secondary hover:text-info" to="/">
+              <Link className="text-secondary hover:text-accent" to="/">
                 Logout
               </Link>
             </FadeInDiv>
             {/* Theme toggle */}
             <FadeInDiv delay={fadeInInterval * 10}>
-              <label className="swap text-primary hover:text-info">
+              <label className="swap hover:text-accent">
                 <input
                   type="checkbox"
                   className="theme-controller"
@@ -125,7 +126,7 @@ function RootComponent() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Camera className="text-primary hover:text-info size-7" />
+                <Camera className="hover:text-accent size-7" />
               </a>
             </FadeInDiv>
           </div>

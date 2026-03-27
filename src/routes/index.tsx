@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
 function IndexComponent() {
   return (
     <div className={`flex flex-col md:flex-row gap-8 p-12 h-max w-full items-center justify-around`}>
-      <div className={`flex flex-col items-center justify-center text-xl lg:text-2xl`}>
+      <div className={`flex flex-col gap-4 items-center justify-center text-xl lg:text-2xl`}>
         <div className={`text-7xl lg:text-8xl font-adorn-copperplate`}>Bashful</div>
         <div>-ruby m.</div>
       </div>
