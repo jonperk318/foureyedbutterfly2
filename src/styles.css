@@ -11,6 +11,7 @@
   prefersdark: true;
 }
 
+@custom-variant light (&where([data-theme=valentine], [data-theme=valentine] *));
 @custom-variant dark (&where([data-theme=sunset], [data-theme=sunset] *));
 
 @font-face {

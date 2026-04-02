@@ -17,16 +17,25 @@ if (!rootElement.innerHTML) {
       <ClerkProvider
         appearance={{
           cssLayerName: "clerk",
-          variables: { colorBackground: "bg-base-300" },
+          variables: {
+            colorForeground: "text-base-content",
+            colorDanger: "text-error",
+          },
           elements: {
-            button: "btn",
+            userButtonTrigger: "bg-base-100 rounded-box",
+            userButtonPopoverActionButton: "btn btn-primary mx-2 mb-2",
+            userButtonPopoverFooter: "hidden",
+            userButtonPopoverMain: "bg-base-300",
+            modalBackdrop: "bg-base-100/60",
+            button: "btn btn-soft",
+            badge: "badge",
             card: "rounded-box bg-base-300",
             input: "input",
-            dividerText: "text-base-content",
-            headerTitle: "text-base-content",
-            headerSubtitle: "text-base-content",
-            form: "text-base-content",
-            footer: "bg-base-200",
+            footer: "hidden",
+            formFieldInput: "text-base-content text-xs",
+            formFieldErrorText: "text-error",
+            formFieldWarningText: "text-warning",
+            dividerLine: "bg-primary",
           },
         }}
       >

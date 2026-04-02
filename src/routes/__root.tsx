@@ -10,7 +10,7 @@ import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import { IoMoon, IoSunny } from "react-icons/io5";
 import { RiInstagramFill } from "react-icons/ri";
-import { Show, UserButton } from "@clerk/react";
+import { Show, useAuth, UserButton } from "@clerk/react";
 
 import type { AppRouter } from "../server/trpc";
 import { useTheme } from "../utils/theme-context";
@@ -29,6 +29,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 function RootComponent() {
   const isFetching = useRouterState({ select: (s) => s.isLoading });
   const { isLight, toggleIsLight } = useTheme();
+  const { isSignedIn } = useAuth();
 
   const fadeInInterval = 0.05;
   const activeProps = {
@@ -39,13 +40,13 @@ function RootComponent() {
     <>
       <div className={`min-h-screen bg-base-100 font-meno-banner`}>
         <div className={`navbar h-30 bg-base-200 py-4 px-8 shadow-lg z-20`}>
-          <div className={`flex-1`}>
+          <div className={`navbar-start`}>
             <div className={`font-royalty-free text-4xl`}>
               Four Eyed Butterfly
             </div>
           </div>
-          <div className={`flex gap-12 flex-none`}>
-            <FadeInDiv delay={0}>
+          <div className={`navbar-end flex gap-12 flex-none items-center`}>
+            <FadeInDiv initialDelay={0}>
               <Link
                 className={`text-primary hover:text-accent`}
                 to="/"
@@ -54,7 +55,7 @@ function RootComponent() {
                 Home
               </Link>
             </FadeInDiv>
-            <FadeInDiv delay={fadeInInterval}>
+            <FadeInDiv initialDelay={fadeInInterval}>
               <Link
                 className={`text-primary hover:text-accent`}
                 to="/about"
@@ -63,11 +64,11 @@ function RootComponent() {
                 About
               </Link>
             </FadeInDiv>
-            <FadeInDiv delay={fadeInInterval * 2}>
+            <FadeInDiv initialDelay={fadeInInterval * 2}>
               <div
                 className={`text-primary hover:text-accent dropdown dropdown-hover dropdown-center`}
               >
-                <div role="button" className={`cursor-pointer mb-2`}>
+                <div role="button" className={`cursor-pointer`}>
                   <Link to="/posts" activeProps={activeProps}>
                     Posts
                   </Link>
@@ -97,31 +98,29 @@ function RootComponent() {
                 </ul>
               </div>
             </FadeInDiv>
-            <FadeInDiv delay={fadeInInterval * 5}>
-              <Link
-                className={`text-secondary hover:text-accent`}
-                to="/login"
-                activeProps={activeProps}
-              >
-                Login
-              </Link>
-            </FadeInDiv>
-            <FadeInDiv delay={fadeInInterval * 6}>
-              <Link
-                className={`text-secondary hover:text-accent`}
-                to="/write"
-                activeProps={activeProps}
-              >
-                Write
-              </Link>
-            </FadeInDiv>
-            <FadeInDiv delay={fadeInInterval * 7}>
-              <Link className={`text-secondary hover:text-accent`} to="/">
-                Logout
-              </Link>
-            </FadeInDiv>
+            {isSignedIn ? (
+              <FadeInDiv initialDelay={fadeInInterval * 6}>
+                <Link
+                  className={`text-secondary hover:text-accent`}
+                  to="/write"
+                  activeProps={activeProps}
+                >
+                  Write
+                </Link>
+              </FadeInDiv>
+            ) : (
+              <FadeInDiv initialDelay={fadeInInterval * 6}>
+                <Link
+                  className={`text-secondary hover:text-accent`}
+                  to="/login"
+                  activeProps={activeProps}
+                >
+                  Login
+                </Link>
+              </FadeInDiv>
+            )}
             {/* Theme toggle */}
-            <FadeInDiv delay={fadeInInterval * 10}>
+            <FadeInDiv initialDelay={fadeInInterval * 10}>
               <label className={`swap hover:text-accent`}>
                 <input
                   type="checkbox"
@@ -136,7 +135,7 @@ function RootComponent() {
               </label>
             </FadeInDiv>
             {/* Instagram */}
-            <FadeInDiv delay={fadeInInterval * 11}>
+            <FadeInDiv initialDelay={fadeInInterval * 11}>
               <a
                 href="https://instagram.com/rubymaghoney/"
                 target="_blank"
@@ -146,7 +145,9 @@ function RootComponent() {
               </a>
             </FadeInDiv>
             <Show when="signed-in">
-              <UserButton />
+              <FadeInDiv>
+                  <UserButton />
+              </FadeInDiv>
             </Show>
           </div>
         </div>
