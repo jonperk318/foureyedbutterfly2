@@ -4,21 +4,20 @@ Second iteration of the Four Eyed Butterfly using tRPC, Zod, Drizzle, imagekit, 
 
 # TODO
 
-[] tRPC
-[] Zod
-[] Drizzle
-[] imagekit backend
-[] imagekit frontend
-[] Clerk backend
-[] Clerk frontend
-[] Express
-[] React/vite frontend
-[] Tanstack query
-[] Tailwind
-[] DaisyUI
-[] Rebuild homepage
-[] Rebuild login page
-[] Rebuild about page
-[] Rebuild posts page
-[] Rebuild single post page
-[] Rebuild write page
+- [x] tRPC
+- [ ] Zod
+- [ ] Drizzle
+- [ ] imagekit backend
+- [ ] imagekit frontend
+- [x] Clerk
+- [x] Express
+- [x] React/vite frontend
+- [ ] Tanstack query
+- [x] Tailwind
+- [x] DaisyUI
+- [x] Rebuild homepage
+- [ ] Rebuild login page
+- [x] Rebuild about page
+- [ ] Rebuild posts page
+- [ ] Rebuild single post page
+- [ ] Rebuild write page

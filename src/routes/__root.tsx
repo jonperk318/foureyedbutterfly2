@@ -13,8 +13,9 @@ import { RiInstagramFill } from "react-icons/ri";
 import { Show, useAuth, UserButton } from "@clerk/react";
 
 import type { AppRouter } from "../server/trpc";
-import { useTheme } from "../utils/theme-context";
+import { darkModeAtom } from "../utils/atoms";
 import FadeInDiv from "../components/fade-in-div";
+import { useAtom } from "jotai/react";
 
 export interface RouterAppContext {
   trpc: TRPCOptionsProxy<AppRouter>;
@@ -27,8 +28,8 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function RootComponent() {
+  const [darkMode, setDarkMode] = useAtom(darkModeAtom);
   const isFetching = useRouterState({ select: (s) => s.isLoading });
-  const { isLight, toggleIsLight } = useTheme();
   const { isSignedIn } = useAuth();
 
   const fadeInInterval = 0.05;
@@ -126,8 +127,8 @@ function RootComponent() {
                   type="checkbox"
                   className={`theme-controller`}
                   value="valentine"
-                  checked={isLight}
-                  onClick={toggleIsLight}
+                  checked={darkMode}
+                  onClick={() => setDarkMode(!darkMode)}
                   readOnly
                 />
                 <IoSunny className={`swap-on size-7`} />

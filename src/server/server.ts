@@ -3,6 +3,7 @@ import url from "node:url";
 import * as fs from "node:fs";
 import express from "express";
 import { trpcMiddleWare } from "./trpc";
+import { initializeDb } from "./db";
 
 const PORT =
   typeof process.env.PORT !== "undefined"
@@ -47,7 +48,7 @@ export const createServer = async (
     app.use(viteServer.middlewares);
 
     // Handle any requests that don't match an API route by serving the React app's index.html
-    app.get("*", async (req, res, next) => {
+    app.get("/{*splat}", async (req, res, next) => {
       try {
         let html = fs.readFileSync(path.resolve(root, "index.html"), "utf-8");
 
@@ -64,7 +65,7 @@ export const createServer = async (
     app.use(express.static(path.resolve(__dirname, "../client")));
 
     // Handle any requests that don't match an API route by serving the React app's index.html
-    app.get("*", (req, res) => {
+    app.get("/{*splat}", (req, res) => {
       res.sendFile(path.resolve(__dirname, "../client", "index.html"));
     });
   }
@@ -73,9 +74,13 @@ export const createServer = async (
 };
 
 if (!isTest) {
-  createServer().then(({ app }) =>
+  createServer().then(async ({ app }) => {
+    const dbReady = await initializeDb();
+    if (!dbReady) {
+      console.warn("⚠️ Continuing without database (migrations may be needed)");
+    }
     app.listen(PORT, () => {
       console.info(`Server available at: http://localhost:${PORT}`);
-    }),
-  );
+    });
+  });
 }

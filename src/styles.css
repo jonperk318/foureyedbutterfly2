@@ -46,3 +46,21 @@
   --font-meno-banner-bold: "MenoBannerBold", sans-serif;
   --font-royalty-free: "RoyaltyFree", sans-serif;
 }
+:root {
+  --clerk-color-primary: var(--color-primary);
+  --clerk-color-primary-foreground: var(--color-primary-content);
+  --clerk-color-danger: var(--color-error);
+  --clerk-color-success: var(--color-success);
+  --clerk-color-warning: var(--color-warning);
+  --clerk-color-neutral: var(--color-neutral);
+  --clerk-color-foreground: var(--color-base-content);
+  --clerk-color-muted-foreground: var(--color-base-content);
+  --clerk-color-background: var(--color-base-300);
+  --clerk-color-input: var(--color-base-100);
+  --clerk-color-input-foreground: var(--color-base-content);
+  --clerk-color-ring: var(--color-secondary);
+  --clerk-color-shimmer: var(--color-accent);
+  --clerk-color-modal-backdrop: var(--color-base-100/50);
+  --clerk-border-radius: 0.375rem;
+  --clerk-spacing: 1rem;
+}

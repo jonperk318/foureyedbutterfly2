@@ -5,7 +5,6 @@ import { ClerkProvider } from "@clerk/react";
 
 import "./styles.css";
 import { createRouter } from "./router";
-import { ThemeProvider } from "./utils/theme-provider";
 
 const router = createRouter();
 
@@ -17,10 +16,6 @@ if (!rootElement.innerHTML) {
       <ClerkProvider
         appearance={{
           cssLayerName: "clerk",
-          variables: {
-            colorForeground: "text-base-content",
-            colorDanger: "text-error",
-          },
           elements: {
             userButtonTrigger: "bg-base-100 rounded-box",
             userButtonPopoverActionButton: "btn btn-primary mx-2 mb-2",
@@ -32,16 +27,11 @@ if (!rootElement.innerHTML) {
             card: "rounded-box bg-base-300",
             input: "input",
             footer: "hidden",
-            formFieldInput: "text-base-content text-xs",
-            formFieldErrorText: "text-error",
-            formFieldWarningText: "text-warning",
-            dividerLine: "bg-primary",
+            tooltip: "tooltip",
           },
         }}
       >
-        <ThemeProvider>
-          <RouterProvider router={router} />
-        </ThemeProvider>
+        <RouterProvider router={router} />
       </ClerkProvider>
     </React.StrictMode>,
   );
