@@ -4,7 +4,7 @@ import type { CreateExpressContextOptions } from "@trpc/server/adapters/express"
 import { z } from "zod";
 import { db } from "./db";
 import { posts, postText, postImages } from "./schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, like } from "drizzle-orm";
 
 const createTRPContext = ({ req, res }: CreateExpressContextOptions) => ({});
 
@@ -13,13 +13,49 @@ type TRPCContext = Awaited<ReturnType<typeof createTRPContext>>;
 const t = initTRPC.context<TRPCContext>().create();
 
 export const appRouter = t.router({
-  hello: t.procedure.query(() => "Hello world!"),
 
-  posts: t.procedure
-    .input(z.object({ limit: z.number().default(10) }).optional())
+  getPostsByYear: t.procedure
+    .input(z.object({ year: z.string().length(4), limit: z.number().default(10000) }))
     .query(async (opts) => {
-      const limit = opts.input?.limit ?? 10;
-      return await db.select().from(posts).limit(limit);
+
+      // Get all posts from the year
+      const postsFromYear = await db
+        .select()
+        .from(posts)
+        .where(like(posts.createdAt, `${opts.input.year}%`))
+        .limit(opts.input.limit);
+
+      if (!postsFromYear || postsFromYear.length === 0) {
+        return [];
+      }
+
+      // For each post, get the first image (lowest postImages index)
+      const postsWithFirstImage = await Promise.all(
+        postsFromYear.map(async (post) => {
+          const firstImage = await db
+            .select()
+            .from(postImages)
+            .where(eq(postImages.postId, post.id))
+            .orderBy(asc(postImages.index))
+            .limit(1);
+
+          return {
+            post: {
+              id: post.id,
+              title: post.title,
+              draft: post.draft,
+              createdAt: post.createdAt,
+            },
+            firstImage: firstImage[0] ? {
+              id: firstImage[0].id,
+              index: firstImage[0].index,
+              slug: firstImage[0].slug,
+            } : null,
+          };
+        })
+      );
+
+      return postsWithFirstImage;
     }),
 
   getPost: t.procedure
@@ -29,7 +65,7 @@ export const appRouter = t.router({
         ? parseInt(opts.input, 10)
         : opts.input;
 
-      // Get the post
+      // Get a single post by ID
       const postResult = await db
         .select()
         .from(posts)
@@ -56,7 +92,6 @@ export const appRouter = t.router({
         .where(eq(postImages.postId, postId))
         .orderBy(asc(postImages.index));
 
-      // Return structured response
       return {
         post: {
           id: post.id,
@@ -126,7 +161,6 @@ export const appRouter = t.router({
         );
       }
 
-      // Return the complete post with its content
       return {
         post: newPost,
         textBlocks: opts.input.textBlocks,
@@ -164,6 +198,7 @@ export const appRouter = t.router({
 
       // If textBlocks provided, replace them
       if (textBlocks !== undefined) {
+
         // Delete existing text blocks
         await db
           .delete(postText)
@@ -183,6 +218,7 @@ export const appRouter = t.router({
 
       // If imageBlocks provided, replace them
       if (imageBlocks !== undefined) {
+
         // Delete existing image blocks
         await db
           .delete(postImages)

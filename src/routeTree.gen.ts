@@ -9,22 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WriteRouteImport } from './routes/write'
 import { Route as PostsRouteImport } from './routes/posts'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as WriteChar123PostIdChar125RouteImport } from './routes/write.{-$postId}'
 import { Route as PostsYearRouteImport } from './routes/posts.$year'
 import { Route as PostsPostIdRouteImport } from './routes/posts.$postId'
 import { Route as DashboardPostsRouteImport } from './routes/dashboard.posts'
 import { Route as DashboardPostsPostIdRouteImport } from './routes/dashboard.posts.$postId'
 
-const WriteRoute = WriteRouteImport.update({
-  id: '/write',
-  path: '/write',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PostsRoute = PostsRouteImport.update({
   id: '/posts',
   path: '/posts',
@@ -50,6 +45,12 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WriteChar123PostIdChar125Route =
+  WriteChar123PostIdChar125RouteImport.update({
+    id: '/write/{-$postId}',
+    path: '/write/{-$postId}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PostsYearRoute = PostsYearRouteImport.update({
   id: '/$year',
   path: '/$year',
@@ -76,10 +77,10 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
-  '/write': typeof WriteRoute
   '/dashboard/posts': typeof DashboardPostsRouteWithChildren
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/$year': typeof PostsYearRoute
+  '/write/{-$postId}': typeof WriteChar123PostIdChar125Route
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
 }
@@ -88,10 +89,10 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
-  '/write': typeof WriteRoute
   '/dashboard/posts': typeof DashboardPostsRouteWithChildren
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/$year': typeof PostsYearRoute
+  '/write/{-$postId}': typeof WriteChar123PostIdChar125Route
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
 }
@@ -101,10 +102,10 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
-  '/write': typeof WriteRoute
   '/dashboard/posts': typeof DashboardPostsRouteWithChildren
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/$year': typeof PostsYearRoute
+  '/write/{-$postId}': typeof WriteChar123PostIdChar125Route
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
 }
@@ -115,10 +116,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/posts'
-    | '/write'
     | '/dashboard/posts'
     | '/posts/$postId'
     | '/posts/$year'
+    | '/write/{-$postId}'
     | '/dashboard/'
     | '/dashboard/posts/$postId'
   fileRoutesByTo: FileRoutesByTo
@@ -127,10 +128,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/posts'
-    | '/write'
     | '/dashboard/posts'
     | '/posts/$postId'
     | '/posts/$year'
+    | '/write/{-$postId}'
     | '/dashboard'
     | '/dashboard/posts/$postId'
   id:
@@ -139,10 +140,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/posts'
-    | '/write'
     | '/dashboard/posts'
     | '/posts/$postId'
     | '/posts/$year'
+    | '/write/{-$postId}'
     | '/dashboard/'
     | '/dashboard/posts/$postId'
   fileRoutesById: FileRoutesById
@@ -152,20 +153,13 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
   PostsRoute: typeof PostsRouteWithChildren
-  WriteRoute: typeof WriteRoute
   DashboardPostsRoute: typeof DashboardPostsRouteWithChildren
+  WriteChar123PostIdChar125Route: typeof WriteChar123PostIdChar125Route
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/write': {
-      id: '/write'
-      path: '/write'
-      fullPath: '/write'
-      preLoaderRoute: typeof WriteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/posts': {
       id: '/posts'
       path: '/posts'
@@ -199,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/write/{-$postId}': {
+      id: '/write/{-$postId}'
+      path: '/write/{-$postId}'
+      fullPath: '/write/{-$postId}'
+      preLoaderRoute: typeof WriteChar123PostIdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/posts/$year': {
@@ -261,8 +262,8 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,
   PostsRoute: PostsRouteWithChildren,
-  WriteRoute: WriteRoute,
   DashboardPostsRoute: DashboardPostsRouteWithChildren,
+  WriteChar123PostIdChar125Route: WriteChar123PostIdChar125Route,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
