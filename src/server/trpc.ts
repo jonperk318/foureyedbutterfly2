@@ -1,12 +1,45 @@
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { z } from "zod";
 import { db } from "./db";
 import { posts, postText, postImages } from "./schema";
-import { eq, asc, like } from "drizzle-orm";
+import { eq, asc, like, and, min, max, lt, gt } from "drizzle-orm";
+import { verifyToken } from "@clerk/backend";
 
-const createTRPContext = ({ req, res }: CreateExpressContextOptions) => ({});
+const createTRPContext = ({ req, res }: CreateExpressContextOptions) => {
+  return { req, res };
+};
+
+const verifyAuth = async (req: any) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Missing authorization header",
+    });
+  }
+
+  const token = authHeader.replace("Bearer ", "");
+  if (!token) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid authorization header format",
+    });
+  }
+
+  try {
+    const payload = await verifyToken(token, {
+      secretKey: process.env.CLERK_SECRET_KEY,
+    });
+    return payload;
+  } catch (error) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid or expired token",
+    });
+  }
+};
 
 type TRPCContext = Awaited<ReturnType<typeof createTRPContext>>;
 
@@ -18,7 +51,6 @@ export const appRouter = t.router({
     .input(z.object({ year: z.string().length(4), limit: z.number().default(10000) }))
     .query(async (opts) => {
 
-      // Get all posts from the year
       const postsFromYear = await db
         .select()
         .from(posts)
@@ -29,7 +61,6 @@ export const appRouter = t.router({
         return [];
       }
 
-      // For each post, get the first image (lowest postImages index)
       const postsWithFirstImage = await Promise.all(
         postsFromYear.map(async (post) => {
           const firstImage = await db
@@ -65,7 +96,6 @@ export const appRouter = t.router({
         ? parseInt(opts.input, 10)
         : opts.input;
 
-      // Get a single post by ID
       const postResult = await db
         .select()
         .from(posts)
@@ -78,19 +108,31 @@ export const appRouter = t.router({
 
       const post = postResult[0];
 
-      // Get all text blocks for this post
       const textBlocksResult = await db
         .select()
         .from(postText)
         .where(eq(postText.postId, postId))
         .orderBy(asc(postText.index));
 
-      // Get all image blocks for this post
       const imageBlocksResult = await db
         .select()
         .from(postImages)
         .where(eq(postImages.postId, postId))
         .orderBy(asc(postImages.index));
+
+      const previousPostResult = await db
+        .select({ id: max(posts.id), title: posts.title })
+        .from(posts)
+        .where(and(lt(posts.id, postId), eq(posts.draft, false)))
+        .limit(1);
+
+      const nextPostResult = await db
+        .select({ id: min(posts.id), title: posts.title })
+        .from(posts)
+        .where(and(gt(posts.id, postId), eq(posts.draft, false)))
+        .limit(1);
+
+      const content = [...imageBlocksResult, ...textBlocksResult].sort((a, b) => a.index - b.index)
 
       return {
         post: {
@@ -99,16 +141,15 @@ export const appRouter = t.router({
           draft: post.draft,
           createdAt: post.createdAt,
         },
-        textBlocks: textBlocksResult.map((block) => ({
-          id: block.id,
-          index: block.index,
-          content: block.content,
-        })),
-        imageBlocks: imageBlocksResult.map((block) => ({
-          id: block.id,
-          index: block.index,
-          slug: block.slug,
-        })),
+        content,
+        previousPost: previousPostResult[0] ? {
+          id: previousPostResult[0].id,
+          title: previousPostResult[0].title,
+        } : null,
+        nextPost: nextPostResult[0] ? {
+          id: nextPostResult[0].id,
+          title: nextPostResult[0].title,
+        } : null,
       };
     }),
 
@@ -126,6 +167,9 @@ export const appRouter = t.router({
       })).optional().default([]),
     }))
     .mutation(async (opts) => {
+
+      await verifyAuth(opts.ctx.req);
+
       // Start a transaction: insert post, then content
       const [newPost] = await db
         .insert(posts)
@@ -183,9 +227,11 @@ export const appRouter = t.router({
       })).optional(),
     }))
     .mutation(async (opts) => {
+
+      await verifyAuth(opts.ctx.req);
+
       const { id, textBlocks, imageBlocks, ...postUpdates } = opts.input;
 
-      // Update post metadata
       const updatedPost = await db
         .update(posts)
         .set(postUpdates)
@@ -277,6 +323,9 @@ export const appRouter = t.router({
   deletePost: t.procedure
     .input(z.number())
     .mutation(async (opts) => {
+
+      await verifyAuth(opts.ctx.req);
+
       const postId = opts.input;
 
       // Delete text and image blocks (optional, CASCADE will handle but explicit is safer)
