@@ -2,10 +2,12 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { z } from "zod";
-import { db } from "./db";
-import { posts, postText, postImages } from "./schema";
 import { eq, asc, like, and, min, max, lt, gt } from "drizzle-orm";
 import { verifyToken } from "@clerk/backend";
+import { ImageKit } from "@imagekit/nodejs";
+
+import { db } from "./db";
+import { posts, postText, postImages } from "./schema";
 
 const createTRPContext = ({ req, res }: CreateExpressContextOptions) => {
   return { req, res };
@@ -40,6 +42,10 @@ const verifyAuth = async (req: any) => {
     });
   }
 };
+
+const imagekit = new ImageKit({
+  privateKey: process.env.VITE_IK_PRIVATE_KEY,
+});
 
 type TRPCContext = Awaited<ReturnType<typeof createTRPContext>>;
 
@@ -347,6 +353,12 @@ export const appRouter = t.router({
         success: !!result[0],
         deletedPost: result[0] || null,
       };
+    }),
+
+  uploadImageAuth: t.procedure
+    .query(async () => {
+      const { token, expire, signature } = imagekit.helper.getAuthenticationParameters();
+      return { token, expire, signature, publicKey: process.env.VITE_IK_PUBLIC_KEY };
     }),
 });
 
