@@ -44,7 +44,7 @@ const verifyAuth = async (req: any) => {
 };
 
 const imagekit = new ImageKit({
-  privateKey: process.env.VITE_IK_PRIVATE_KEY,
+  privateKey: process.env.IK_PRIVATE_KEY,
 });
 
 type TRPCContext = Awaited<ReturnType<typeof createTRPContext>>;

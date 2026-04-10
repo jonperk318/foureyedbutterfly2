@@ -49,19 +49,19 @@ function RouteComponent() {
         <NewBlock />
         {postContent.map((block) => {
           return (
-            <>
-              <div className={``}>
+            <div key={block.index}>
+              <div className={`flex`}>
                 {"slug" in block ? (
-                  <>
+                  <div className={``}>
                     <Upload setContent={setPostContent} index={block.index} />
                     <div>{block.slug}</div>
-                  </>
+                  </div>
                 ) : (
                   <div>{block.content}</div>
                 )}
               </div>
               <NewBlock />
-            </>
+            </div>
           )
         })}
       </Show>

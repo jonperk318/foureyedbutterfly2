@@ -5,10 +5,9 @@ import {
     ImageKitUploadNetworkError,
     upload,
 } from "@imagekit/react";
-import { useQuery } from "@tanstack/react-query";
 import { Dispatch, useRef, useState, SetStateAction } from "react";
 
-import { trpc } from "../router";
+import { trpcRaw } from "../router";
 import { PostContent } from "../routes/write.{-$postId}";
 
 
@@ -22,16 +21,6 @@ export const Upload = ( { setContent, index }: UploadProps ) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const abortController = new AbortController();
 
-    const authenticator = async () => {
-      try {
-        const response = useQuery(trpc.uploadImageAuth.queryOptions());
-        return response.data
-      } catch (error) {
-        console.error("Authentication error:", error);
-        throw new Error("Authentication request failed");
-      }
-    };
-
     const handleUpload = async () => {
       const fileInput = fileInputRef.current;
       if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -43,7 +32,7 @@ export const Upload = ( { setContent, index }: UploadProps ) => {
 
       let authParams;
       try {
-        authParams = await authenticator();
+        authParams = await trpcRaw.uploadImageAuth.query();
       } catch (authError) {
         console.error("Failed to authenticate for upload:", authError);
         return;
@@ -63,8 +52,10 @@ export const Upload = ( { setContent, index }: UploadProps ) => {
               setProgress((event.loaded / event.total) * 100);
           },
           abortSignal: abortController.signal,
+        }).then(result => {
+          console.log(result)
+          setContent(prev => prev.map(block => block.index === index ? {...block, slug: file.name} : block))
         });
-        setContent(prev => prev.map(block => block.index === index ? {...block, slug: file.name} : block))
         console.log("Upload response:", uploadResponse);
       } catch (error) {
           if (error instanceof ImageKitAbortError) {
@@ -83,14 +74,11 @@ export const Upload = ( { setContent, index }: UploadProps ) => {
 
     return (
         <>
-            {/* File input element using React ref */}
             <input type="file" ref={fileInputRef} />
-            {/* Button to trigger the upload process */}
-            <button type="button" onClick={handleUpload}>
+            <button type="button" onClick={handleUpload} className={`btn`}>
                 Upload file
             </button>
             <br />
-            {/* Display the current upload progress */}
             Upload progress: <progress value={progress} max={100} className={`progress progress-primary`}></progress>
         </>
     );

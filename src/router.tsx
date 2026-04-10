@@ -9,16 +9,21 @@ import type { AppRouter } from "./server/trpc";
 
 export const queryClient = new QueryClient();
 
+const trpcClient = createTRPCClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      url: "/trpc",
+    }),
+  ],
+});
+
 export const trpc = createTRPCOptionsProxy<AppRouter>({
-  client: createTRPCClient({
-    links: [
-      httpBatchLink({
-        url: "/trpc",
-      }),
-    ],
-  }),
+  client: trpcClient,
   queryClient,
 });
+
+// Export the raw client for direct (non-hook) calls
+export const trpcRaw = trpcClient;
 
 export function createRouter() {
   const router = createTanStackRouter({

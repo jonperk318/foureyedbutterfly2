@@ -1,3 +1,4 @@
+import "dotenv/config";
 import path from "node:path";
 import url from "node:url";
 import * as fs from "node:fs";
