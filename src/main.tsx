@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
-import { ClerkProvider } from "@clerk/react";
 
 import "./styles.css";
 import { createRouter } from "./router";
+import { CustomClerkProvider } from "./lib/clerk";
+import { CustomToaster } from "./lib/react-hot-toast";
 
 const router = createRouter();
 
@@ -13,26 +14,10 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <ClerkProvider
-        appearance={{
-          cssLayerName: "clerk",
-          elements: {
-            userButtonTrigger: "bg-base-100 rounded-box",
-            userButtonPopoverActionButton: "btn btn-primary mx-2 mb-2",
-            userButtonPopoverFooter: "hidden",
-            userButtonPopoverMain: "bg-base-300",
-            modalBackdrop: "bg-base-100/60",
-            button: "btn btn-soft",
-            badge: "badge",
-            card: "rounded-box bg-base-300",
-            input: "input",
-            footer: "hidden",
-            tooltip: "tooltip",
-          },
-        }}
-      >
+      <CustomClerkProvider>
         <RouterProvider router={router} />
-      </ClerkProvider>
+        <CustomToaster />
+      </CustomClerkProvider>
     </React.StrictMode>,
   );
 }

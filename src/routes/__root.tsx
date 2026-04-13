@@ -147,7 +147,7 @@ function RootComponent() {
             </FadeInDiv>
             <Show when="signed-in">
               <FadeInDiv>
-                  <UserButton />
+                <UserButton />
               </FadeInDiv>
             </Show>
           </div>

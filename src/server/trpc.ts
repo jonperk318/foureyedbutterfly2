@@ -52,11 +52,14 @@ type TRPCContext = Awaited<ReturnType<typeof createTRPContext>>;
 const t = initTRPC.context<TRPCContext>().create();
 
 export const appRouter = t.router({
-
   getPostsByYear: t.procedure
-    .input(z.object({ year: z.string().length(4), limit: z.number().default(10000) }))
+    .input(
+      z.object({
+        year: z.string().length(4),
+        limit: z.number().default(10000),
+      }),
+    )
     .query(async (opts) => {
-
       const postsFromYear = await db
         .select()
         .from(posts)
@@ -83,13 +86,15 @@ export const appRouter = t.router({
               draft: post.draft,
               createdAt: post.createdAt,
             },
-            firstImage: firstImage[0] ? {
-              id: firstImage[0].id,
-              index: firstImage[0].index,
-              slug: firstImage[0].slug,
-            } : null,
+            firstImage: firstImage[0]
+              ? {
+                  id: firstImage[0].id,
+                  index: firstImage[0].index,
+                  slug: firstImage[0].slug,
+                }
+              : null,
           };
-        })
+        }),
       );
 
       return postsWithFirstImage;
@@ -98,9 +103,8 @@ export const appRouter = t.router({
   getPost: t.procedure
     .input(z.union([z.string(), z.number()]))
     .query(async (opts) => {
-      const postId = typeof opts.input === "string"
-        ? parseInt(opts.input, 10)
-        : opts.input;
+      const postId =
+        typeof opts.input === "string" ? parseInt(opts.input, 10) : opts.input;
 
       const postResult = await db
         .select()
@@ -138,7 +142,9 @@ export const appRouter = t.router({
         .where(and(gt(posts.id, postId), eq(posts.draft, false)))
         .limit(1);
 
-      const content = [...imageBlocksResult, ...textBlocksResult].sort((a, b) => a.index - b.index)
+      const content = [...imageBlocksResult, ...textBlocksResult].sort(
+        (a, b) => a.index - b.index,
+      );
 
       return {
         post: {
@@ -148,32 +154,47 @@ export const appRouter = t.router({
           createdAt: post.createdAt,
         },
         content,
-        previousPost: previousPostResult[0] ? {
-          id: previousPostResult[0].id,
-          title: previousPostResult[0].title,
-        } : null,
-        nextPost: nextPostResult[0] ? {
-          id: nextPostResult[0].id,
-          title: nextPostResult[0].title,
-        } : null,
+        previousPost: previousPostResult[0]
+          ? {
+              id: previousPostResult[0].id,
+              title: previousPostResult[0].title,
+            }
+          : null,
+        nextPost: nextPostResult[0]
+          ? {
+              id: nextPostResult[0].id,
+              title: nextPostResult[0].title,
+            }
+          : null,
       };
     }),
 
   createPost: t.procedure
-    .input(z.object({
-      title: z.string().min(1),
-      draft: z.boolean().optional().default(true),
-      textBlocks: z.array(z.object({
-        index: z.number(),
-        content: z.string(),
-      })).optional().default([]),
-      imageBlocks: z.array(z.object({
-        index: z.number(),
-        slug: z.string(),
-      })).optional().default([]),
-    }))
+    .input(
+      z.object({
+        title: z.string().min(1),
+        draft: z.boolean().optional().default(true),
+        textBlocks: z
+          .array(
+            z.object({
+              index: z.number(),
+              content: z.string(),
+            }),
+          )
+          .optional()
+          .default([]),
+        imageBlocks: z
+          .array(
+            z.object({
+              index: z.number(),
+              slug: z.string(),
+            }),
+          )
+          .optional()
+          .default([]),
+      }),
+    )
     .mutation(async (opts) => {
-
       await verifyAuth(opts.ctx.req);
 
       // Start a transaction: insert post, then content
@@ -196,7 +217,7 @@ export const appRouter = t.router({
             postId: newPost.id,
             index: block.index,
             content: block.content,
-          }))
+          })),
         );
       }
 
@@ -207,7 +228,7 @@ export const appRouter = t.router({
             postId: newPost.id,
             index: block.index,
             slug: block.slug,
-          }))
+          })),
         );
       }
 
@@ -219,21 +240,30 @@ export const appRouter = t.router({
     }),
 
   updatePost: t.procedure
-    .input(z.object({
-      id: z.number(),
-      title: z.string().min(1).optional(),
-      draft: z.boolean().optional(),
-      textBlocks: z.array(z.object({
-        index: z.number(),
-        content: z.string(),
-      })).optional(),
-      imageBlocks: z.array(z.object({
-        index: z.number(),
-        slug: z.string(),
-      })).optional(),
-    }))
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1).optional(),
+        draft: z.boolean().optional(),
+        textBlocks: z
+          .array(
+            z.object({
+              index: z.number(),
+              content: z.string(),
+            }),
+          )
+          .optional(),
+        imageBlocks: z
+          .array(
+            z.object({
+              index: z.number(),
+              slug: z.string(),
+            }),
+          )
+          .optional(),
+      }),
+    )
     .mutation(async (opts) => {
-
       await verifyAuth(opts.ctx.req);
 
       const { id, textBlocks, imageBlocks, ...postUpdates } = opts.input;
@@ -250,11 +280,8 @@ export const appRouter = t.router({
 
       // If textBlocks provided, replace them
       if (textBlocks !== undefined) {
-
         // Delete existing text blocks
-        await db
-          .delete(postText)
-          .where(eq(postText.postId, id));
+        await db.delete(postText).where(eq(postText.postId, id));
 
         // Insert new text blocks
         if (textBlocks.length > 0) {
@@ -263,18 +290,15 @@ export const appRouter = t.router({
               postId: id,
               index: block.index,
               content: block.content,
-            }))
+            })),
           );
         }
       }
 
       // If imageBlocks provided, replace them
       if (imageBlocks !== undefined) {
-
         // Delete existing image blocks
-        await db
-          .delete(postImages)
-          .where(eq(postImages.postId, id));
+        await db.delete(postImages).where(eq(postImages.postId, id));
 
         // Insert new image blocks
         if (imageBlocks.length > 0) {
@@ -283,7 +307,7 @@ export const appRouter = t.router({
               postId: id,
               index: block.index,
               slug: block.slug,
-            }))
+            })),
           );
         }
       }
@@ -326,40 +350,38 @@ export const appRouter = t.router({
       };
     }),
 
-  deletePost: t.procedure
-    .input(z.number())
-    .mutation(async (opts) => {
+  deletePost: t.procedure.input(z.number()).mutation(async (opts) => {
+    await verifyAuth(opts.ctx.req);
 
-      await verifyAuth(opts.ctx.req);
+    const postId = opts.input;
 
-      const postId = opts.input;
+    // Delete text and image blocks (optional, CASCADE will handle but explicit is safer)
+    await db.delete(postImages).where(eq(postImages.postId, postId));
 
-      // Delete text and image blocks (optional, CASCADE will handle but explicit is safer)
-      await db
-        .delete(postImages)
-        .where(eq(postImages.postId, postId));
+    await db.delete(postText).where(eq(postText.postId, postId));
 
-      await db
-        .delete(postText)
-        .where(eq(postText.postId, postId));
+    // Delete post
+    const result = await db
+      .delete(posts)
+      .where(eq(posts.id, postId))
+      .returning();
 
-      // Delete post
-      const result = await db
-        .delete(posts)
-        .where(eq(posts.id, postId))
-        .returning();
+    return {
+      success: !!result[0],
+      deletedPost: result[0] || null,
+    };
+  }),
 
-      return {
-        success: !!result[0],
-        deletedPost: result[0] || null,
-      };
-    }),
-
-  uploadImageAuth: t.procedure
-    .query(async () => {
-      const { token, expire, signature } = imagekit.helper.getAuthenticationParameters();
-      return { token, expire, signature, publicKey: process.env.VITE_IK_PUBLIC_KEY };
-    }),
+  uploadImageAuth: t.procedure.query(async () => {
+    const { token, expire, signature } =
+      imagekit.helper.getAuthenticationParameters();
+    return {
+      token,
+      expire,
+      signature,
+      publicKey: process.env.VITE_IK_PUBLIC_KEY,
+    };
+  }),
 });
 
 export const trpcMiddleWare = createExpressMiddleware({

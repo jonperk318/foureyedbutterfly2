@@ -10,7 +10,6 @@ const FadeInDiv = ({
   children,
   ...props
 }: FadeInDivProps & HTMLMotionProps<"div">) => {
-
   const [delay, setDelay] = useState<number | undefined>(initialDelay);
 
   return (
@@ -24,7 +23,7 @@ const FadeInDiv = ({
     >
       {children}
     </motion.div>
-  )
+  );
 };
 
 export default FadeInDiv;
