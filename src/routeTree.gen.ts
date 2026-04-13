@@ -11,14 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PostsRouteImport } from './routes/posts'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CreateRouteImport } from './routes/create'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
-import { Route as WriteChar123PostIdChar125RouteImport } from './routes/write.{-$postId}'
 import { Route as PostsYearRouteImport } from './routes/posts.$year'
 import { Route as PostsPostIdRouteImport } from './routes/posts.$postId'
-import { Route as DashboardPostsRouteImport } from './routes/dashboard.posts'
-import { Route as DashboardPostsPostIdRouteImport } from './routes/dashboard.posts.$postId'
+import { Route as CreateMediaRouteImport } from './routes/create.media'
+import { Route as CreateWriteChar123PostIdChar125RouteImport } from './routes/create.write.{-$postId}'
 
 const PostsRoute = PostsRouteImport.update({
   id: '/posts',
@@ -28,6 +27,11 @@ const PostsRoute = PostsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateRoute = CreateRouteImport.update({
+  id: '/create',
+  path: '/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -40,17 +44,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WriteChar123PostIdChar125Route =
-  WriteChar123PostIdChar125RouteImport.update({
-    id: '/write/{-$postId}',
-    path: '/write/{-$postId}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const PostsYearRoute = PostsYearRouteImport.update({
   id: '/$year',
   path: '/$year',
@@ -61,101 +54,94 @@ const PostsPostIdRoute = PostsPostIdRouteImport.update({
   path: '/$postId',
   getParentRoute: () => PostsRoute,
 } as any)
-const DashboardPostsRoute = DashboardPostsRouteImport.update({
-  id: '/dashboard/posts',
-  path: '/dashboard/posts',
-  getParentRoute: () => rootRouteImport,
+const CreateMediaRoute = CreateMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => CreateRoute,
 } as any)
-const DashboardPostsPostIdRoute = DashboardPostsPostIdRouteImport.update({
-  id: '/$postId',
-  path: '/$postId',
-  getParentRoute: () => DashboardPostsRoute,
-} as any)
+const CreateWriteChar123PostIdChar125Route =
+  CreateWriteChar123PostIdChar125RouteImport.update({
+    id: '/write/{-$postId}',
+    path: '/write/{-$postId}',
+    getParentRoute: () => CreateRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/create': typeof CreateRouteWithChildren
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
-  '/dashboard/posts': typeof DashboardPostsRouteWithChildren
+  '/create/media': typeof CreateMediaRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/$year': typeof PostsYearRoute
-  '/write/{-$postId}': typeof WriteChar123PostIdChar125Route
-  '/dashboard/': typeof DashboardIndexRoute
-  '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
+  '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/create': typeof CreateRouteWithChildren
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
-  '/dashboard/posts': typeof DashboardPostsRouteWithChildren
+  '/create/media': typeof CreateMediaRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/$year': typeof PostsYearRoute
-  '/write/{-$postId}': typeof WriteChar123PostIdChar125Route
-  '/dashboard': typeof DashboardIndexRoute
-  '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
+  '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/create': typeof CreateRouteWithChildren
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
-  '/dashboard/posts': typeof DashboardPostsRouteWithChildren
+  '/create/media': typeof CreateMediaRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/$year': typeof PostsYearRoute
-  '/write/{-$postId}': typeof WriteChar123PostIdChar125Route
-  '/dashboard/': typeof DashboardIndexRoute
-  '/dashboard/posts/$postId': typeof DashboardPostsPostIdRoute
+  '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/create'
     | '/login'
     | '/posts'
-    | '/dashboard/posts'
+    | '/create/media'
     | '/posts/$postId'
     | '/posts/$year'
-    | '/write/{-$postId}'
-    | '/dashboard/'
-    | '/dashboard/posts/$postId'
+    | '/create/write/{-$postId}'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/create'
     | '/login'
     | '/posts'
-    | '/dashboard/posts'
+    | '/create/media'
     | '/posts/$postId'
     | '/posts/$year'
-    | '/write/{-$postId}'
-    | '/dashboard'
-    | '/dashboard/posts/$postId'
+    | '/create/write/{-$postId}'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/create'
     | '/login'
     | '/posts'
-    | '/dashboard/posts'
+    | '/create/media'
     | '/posts/$postId'
     | '/posts/$year'
-    | '/write/{-$postId}'
-    | '/dashboard/'
-    | '/dashboard/posts/$postId'
+    | '/create/write/{-$postId}'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CreateRoute: typeof CreateRouteWithChildren
   LoginRoute: typeof LoginRoute
   PostsRoute: typeof PostsRouteWithChildren
-  DashboardPostsRoute: typeof DashboardPostsRouteWithChildren
-  WriteChar123PostIdChar125Route: typeof WriteChar123PostIdChar125Route
-  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -174,6 +160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/create': {
+      id: '/create'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -186,20 +179,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/write/{-$postId}': {
-      id: '/write/{-$postId}'
-      path: '/write/{-$postId}'
-      fullPath: '/write/{-$postId}'
-      preLoaderRoute: typeof WriteChar123PostIdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/posts/$year': {
@@ -216,22 +195,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsPostIdRouteImport
       parentRoute: typeof PostsRoute
     }
-    '/dashboard/posts': {
-      id: '/dashboard/posts'
-      path: '/dashboard/posts'
-      fullPath: '/dashboard/posts'
-      preLoaderRoute: typeof DashboardPostsRouteImport
-      parentRoute: typeof rootRouteImport
+    '/create/media': {
+      id: '/create/media'
+      path: '/media'
+      fullPath: '/create/media'
+      preLoaderRoute: typeof CreateMediaRouteImport
+      parentRoute: typeof CreateRoute
     }
-    '/dashboard/posts/$postId': {
-      id: '/dashboard/posts/$postId'
-      path: '/$postId'
-      fullPath: '/dashboard/posts/$postId'
-      preLoaderRoute: typeof DashboardPostsPostIdRouteImport
-      parentRoute: typeof DashboardPostsRoute
+    '/create/write/{-$postId}': {
+      id: '/create/write/{-$postId}'
+      path: '/write/{-$postId}'
+      fullPath: '/create/write/{-$postId}'
+      preLoaderRoute: typeof CreateWriteChar123PostIdChar125RouteImport
+      parentRoute: typeof CreateRoute
     }
   }
 }
+
+interface CreateRouteChildren {
+  CreateMediaRoute: typeof CreateMediaRoute
+  CreateWriteChar123PostIdChar125Route: typeof CreateWriteChar123PostIdChar125Route
+}
+
+const CreateRouteChildren: CreateRouteChildren = {
+  CreateMediaRoute: CreateMediaRoute,
+  CreateWriteChar123PostIdChar125Route: CreateWriteChar123PostIdChar125Route,
+}
+
+const CreateRouteWithChildren =
+  CreateRoute._addFileChildren(CreateRouteChildren)
 
 interface PostsRouteChildren {
   PostsPostIdRoute: typeof PostsPostIdRoute
@@ -245,26 +237,12 @@ const PostsRouteChildren: PostsRouteChildren = {
 
 const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
 
-interface DashboardPostsRouteChildren {
-  DashboardPostsPostIdRoute: typeof DashboardPostsPostIdRoute
-}
-
-const DashboardPostsRouteChildren: DashboardPostsRouteChildren = {
-  DashboardPostsPostIdRoute: DashboardPostsPostIdRoute,
-}
-
-const DashboardPostsRouteWithChildren = DashboardPostsRoute._addFileChildren(
-  DashboardPostsRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CreateRoute: CreateRouteWithChildren,
   LoginRoute: LoginRoute,
   PostsRoute: PostsRouteWithChildren,
-  DashboardPostsRoute: DashboardPostsRouteWithChildren,
-  WriteChar123PostIdChar125Route: WriteChar123PostIdChar125Route,
-  DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

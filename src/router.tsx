@@ -4,26 +4,20 @@ import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 
 import { routeTree } from "./routeTree.gen";
-import { Spinner } from "./routes/-components/spinner";
 import type { AppRouter } from "./server/trpc";
 
 export const queryClient = new QueryClient();
 
-const trpcClient = createTRPCClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: "/trpc",
-    }),
-  ],
-});
-
 export const trpc = createTRPCOptionsProxy<AppRouter>({
-  client: trpcClient,
+  client: createTRPCClient<AppRouter>({
+    links: [
+      httpBatchLink({
+        url: "/trpc",
+      }),
+    ],
+  }),
   queryClient,
 });
-
-// Export the raw client for direct (non-hook) calls
-export const trpcRaw = trpcClient;
 
 export function createRouter() {
   const router = createTanStackRouter({
@@ -36,7 +30,7 @@ export function createRouter() {
     },
     defaultPendingComponent: () => (
       <div className={`p-2 text-2xl`}>
-        <Spinner />
+        <div className={`loading loading-spinner text-secondary`} />
       </div>
     ),
     Wrap: function WrapComponent({ children }) {

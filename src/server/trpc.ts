@@ -4,7 +4,7 @@ import type { CreateExpressContextOptions } from "@trpc/server/adapters/express"
 import { z } from "zod";
 import { eq, asc, like, and, min, max, lt, gt } from "drizzle-orm";
 import { verifyToken } from "@clerk/backend";
-import { ImageKit } from "@imagekit/nodejs";
+import ImageKit from "@imagekit/nodejs";
 
 import { db } from "./db";
 import { posts, postText, postImages } from "./schema";
@@ -382,6 +382,11 @@ export const appRouter = t.router({
       publicKey: process.env.VITE_IK_PUBLIC_KEY,
     };
   }),
+
+  media: t.procedure.query(async () => {
+    const files = await imagekit.assets.list({ path: "/posts" });
+    return files;
+  })
 });
 
 export const trpcMiddleWare = createExpressMiddleware({

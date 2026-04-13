@@ -7,8 +7,9 @@ import {
 } from "@imagekit/react";
 import { ChangeEvent, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
 
-import { trpcRaw } from "../router";
+import { trpc } from "../router";
 import { IoCloudUpload, IoReload } from "react-icons/io5";
 
 export const Upload = () => {
@@ -16,6 +17,7 @@ export const Upload = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortController = new AbortController();
   const [image, setImage] = useState<null | string>(null);
+  const { data: authParams, refetch: refetchAuthParams } = useQuery(trpc.uploadImageAuth.queryOptions())
 
   const onImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -38,13 +40,7 @@ export const Upload = () => {
 
     const file = fileInput.files[0];
 
-    let authParams;
-    try {
-      authParams = await trpcRaw.uploadImageAuth.query();
-    } catch (authError) {
-      console.error("Failed to authenticate for upload:", authError);
-      return;
-    }
+    refetchAuthParams();
     if (!authParams) return;
     const { signature, expire, token, publicKey } = authParams;
 
@@ -94,7 +90,7 @@ export const Upload = () => {
           />
         </div>
       ) : (
-        <h1>Upload images and videos to place within content blocks</h1>
+        <h1>Upload images and videos to add to posts</h1>
       )}
       <input
         className="hidden w-full rounded-box bg-base-200"

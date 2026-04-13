@@ -101,13 +101,36 @@ function RootComponent() {
             </FadeInDiv>
             {isSignedIn ? (
               <FadeInDiv initialDelay={fadeInInterval * 6}>
-                <Link
-                  className={`text-secondary hover:text-accent`}
-                  to="/write"
-                  activeProps={activeProps}
+                <div
+                  className={`text-secondary hover:text-accent dropdown dropdown-hover dropdown-center`}
                 >
-                  Write
-                </Link>
+                  <div role="button" className={`cursor-pointer`}>
+                    Create
+                  </div>
+                  <ul
+                    tabIndex={-1}
+                    className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-24 shadow`}
+                  >
+                    <li>
+                      <Link
+                        to="/create/media"
+                        className={`text-primary`}
+                        activeProps={activeProps}
+                      >
+                        Media
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/create/write"
+                        className={`text-primary`}
+                        activeProps={activeProps}
+                      >
+                        Write
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
               </FadeInDiv>
             ) : (
               <FadeInDiv initialDelay={fadeInInterval * 6}>

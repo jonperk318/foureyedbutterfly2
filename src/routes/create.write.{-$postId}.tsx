@@ -2,14 +2,11 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { IoAdd, IoImage, IoVideocam, IoDocumentText } from "react-icons/io5";
-import { Show } from "@clerk/react";
 
 import { trpc } from "../router";
 import { postText, postImages } from "../server/schema";
-import { GoBack } from "../components/go-back";
-import { Upload } from "../components/upload";
 
-export const Route = createFileRoute("/write/{-$postId}")({
+export const Route = createFileRoute("/create/write/{-$postId}")({
   component: RouteComponent,
   loader: async ({ context: { trpc, queryClient }, params: { postId } }) => {
     if (postId)
@@ -70,32 +67,24 @@ function RouteComponent() {
   };
 
   return (
-    <div className={`flex flex-col w-full py-4 px-12`}>
-      <Show when="signed-in">
-        <div className={`bg-base-300 mb-10 mt-4 rounded-box shadow`}>
-          <Upload />
-        </div>
-        <NewBlock />
-        {postContent.map((block) => {
-          return (
-            <div key={block.index}>
-              <div className={`flex`}>
-                {"slug" in block ? (
-                  <div className={``}>
-                    <div>{block.slug}</div>
-                  </div>
-                ) : (
-                  <div>{block.content}</div>
-                )}
-              </div>
-              <NewBlock />
+    <>
+      <NewBlock />
+      {postContent.map((block) => {
+        return (
+          <div key={block.index}>
+            <div className={`flex`}>
+              {"slug" in block ? (
+                <div className={``}>
+                  <div>{block.slug}</div>
+                </div>
+              ) : (
+                <div>{block.content}</div>
+              )}
             </div>
-          );
-        })}
-      </Show>
-      <Show when="signed-out">
-        <GoBack />
-      </Show>
-    </div>
+            <NewBlock />
+          </div>
+        );
+      })}
+    </>
   );
 }
