@@ -1,14 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { MdImageNotSupported } from "react-icons/md";
 import { useState } from "react";
-import { IoCloseCircle, IoTrashBin } from "react-icons/io5";
+import { IoCloseCircle, IoReload, IoTrashBin } from "react-icons/io5";
 import toast from "react-hot-toast";
 
 import { trpc } from "../router"
 import Image from "./image";
 
 
-export const MediaGallery = () => {
+export const DeleteMedia = () => {
   const mediaQuery = useQuery({...trpc.getAllMedia.queryOptions(), refetchInterval: 1000 * 15,})
   const deleteMediaMutation = useMutation(trpc.deleteMedia.mutationOptions())
 
@@ -40,12 +40,20 @@ export const MediaGallery = () => {
     <div className={`p-3 md:p-4`}>
       {mediaQuery.data ? (
         <>
-          <div className={`flex flex-col md:flex-row justify-around md:justify-between items-center h-48 md:h-24`}>
+          <div className={`flex flex-col md:flex-row justify-around md:justify-between items-center h-60 md:h-24`}>
             <h1 className={`text-sm lg:text-lg`}>Select and delete uploaded images and videos</h1>
-            <div className={`flex flex-col sm:flex-row gap-4`}>
+            <div className={`flex flex-col items-center sm:flex-row gap-4`}>
+              {mediaQuery.isPending ? (
+                <div className="loading loading-spinner text-primary" />
+              ) : (
+                <IoReload
+                  className={`size-7 hover:cursor-pointer`}
+                  onClick={() => mediaQuery.refetch()}
+                />
+              )}
               <button className={`btn btn-accent`} onClick={() => setSelectedFiles([])} disabled={selectedFiles.length === 0}>
                 <IoCloseCircle className={`size-7`} />
-                Clear Selection
+                Clear
               </button>
               <button className={`btn btn-warning`} disabled={selectedFiles.length === 0} onClick={() => document.getElementById("delete-files-modal")?.showModal()}>
                 <IoTrashBin className={`size-7`} />
@@ -56,7 +64,7 @@ export const MediaGallery = () => {
                   <h1 className={`font-bold text-lg text-warning`}>Delete the following files?</h1>
                   <div className={`flex flex-col py-4`}>
                     {selectedFiles.map(fileName => (
-                      <p>{fileName}</p>
+                      <p key={fileName}>{fileName}</p>
                     ))}
                   </div>
                   <div className={`modal-action`}>

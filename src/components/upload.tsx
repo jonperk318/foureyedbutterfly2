@@ -123,11 +123,11 @@ export const Upload = () => {
       >
         <h1 className={`sm:w-sm`}>Upload progress: </h1>
         <progress
-          value={Math.ceil(progress)}
+          value={progress}
           max={100}
           className={`progress progress-secondary mr-4`}
         />
-        <h1>{progress}%</h1>
+        <h1>{Math.floor(progress)}%</h1>
       </div>
     </div>
   );

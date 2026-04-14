@@ -2,12 +2,12 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { z } from "zod";
-import { eq, asc, like, and, min, max, lt, gt } from "drizzle-orm";
+import { eq, like, and, min, max, lt, gt } from "drizzle-orm";
 import { verifyToken } from "@clerk/backend";
 import ImageKit from "@imagekit/nodejs";
 
 import { db } from "./db";
-import { posts, postText, postImages } from "./schema";
+import { posts, postContent } from "./schema";
 
 const createTRPContext = ({ req, res }: CreateExpressContextOptions) => {
   return { req, res };
@@ -74,9 +74,8 @@ export const appRouter = t.router({
         postsFromYear.map(async (post) => {
           const firstImage = await db
             .select()
-            .from(postImages)
-            .where(eq(postImages.postId, post.id))
-            .orderBy(asc(postImages.index))
+            .from(postContent)
+            .where(and(eq(postContent.postId, post.id), eq(postContent.contentType, "image")))
             .limit(1);
 
           return {
@@ -89,8 +88,8 @@ export const appRouter = t.router({
             firstImage: firstImage[0]
               ? {
                   id: firstImage[0].id,
-                  index: firstImage[0].index,
-                  slug: firstImage[0].slug,
+                  contentType: firstImage[0].contentType,
+                  data: firstImage[0].data,
                 }
               : null,
           };
@@ -118,17 +117,10 @@ export const appRouter = t.router({
 
       const post = postResult[0];
 
-      const textBlocksResult = await db
+      const contentResult = await db
         .select()
-        .from(postText)
-        .where(eq(postText.postId, postId))
-        .orderBy(asc(postText.index));
-
-      const imageBlocksResult = await db
-        .select()
-        .from(postImages)
-        .where(eq(postImages.postId, postId))
-        .orderBy(asc(postImages.index));
+        .from(postContent)
+        .where(eq(postContent.postId, postId));
 
       const previousPostResult = await db
         .select({ id: max(posts.id), title: posts.title })
@@ -142,10 +134,6 @@ export const appRouter = t.router({
         .where(and(gt(posts.id, postId), eq(posts.draft, false)))
         .limit(1);
 
-      const content = [...imageBlocksResult, ...textBlocksResult].sort(
-        (a, b) => a.index - b.index,
-      );
-
       return {
         post: {
           id: post.id,
@@ -153,7 +141,7 @@ export const appRouter = t.router({
           draft: post.draft,
           createdAt: post.createdAt,
         },
-        content,
+        content: contentResult,
         previousPost: previousPostResult[0]
           ? {
               id: previousPostResult[0].id,
@@ -174,20 +162,11 @@ export const appRouter = t.router({
       z.object({
         title: z.string().min(1),
         draft: z.boolean().optional().default(true),
-        textBlocks: z
+        content: z
           .array(
             z.object({
-              index: z.number(),
-              content: z.string(),
-            }),
-          )
-          .optional()
-          .default([]),
-        imageBlocks: z
-          .array(
-            z.object({
-              index: z.number(),
-              slug: z.string(),
+              contentType: z.enum(["text", "image", "video"]),
+              data: z.string(),
             }),
           )
           .optional()
@@ -197,7 +176,6 @@ export const appRouter = t.router({
     .mutation(async (opts) => {
       await verifyAuth(opts.ctx.req);
 
-      // Start a transaction: insert post, then content
       const [newPost] = await db
         .insert(posts)
         .values({
@@ -210,32 +188,26 @@ export const appRouter = t.router({
         throw new Error("Failed to create post");
       }
 
-      // Insert text blocks if provided
-      if (opts.input.textBlocks.length > 0) {
-        await db.insert(postText).values(
-          opts.input.textBlocks.map((block) => ({
+      // Insert content blocks if provided
+      if (opts.input.content.length > 0) {
+        await db.insert(postContent).values(
+          opts.input.content.map((block) => ({
             postId: newPost.id,
-            index: block.index,
-            content: block.content,
+            contentType: block.contentType,
+            data: block.data,
           })),
         );
       }
 
-      // Insert image blocks if provided
-      if (opts.input.imageBlocks.length > 0) {
-        await db.insert(postImages).values(
-          opts.input.imageBlocks.map((block) => ({
-            postId: newPost.id,
-            index: block.index,
-            slug: block.slug,
-          })),
-        );
-      }
+      // Fetch created content
+      const createdContent = await db
+        .select()
+        .from(postContent)
+        .where(eq(postContent.postId, newPost.id));
 
       return {
         post: newPost,
-        textBlocks: opts.input.textBlocks,
-        imageBlocks: opts.input.imageBlocks,
+        content: createdContent,
       };
     }),
 
@@ -245,19 +217,11 @@ export const appRouter = t.router({
         id: z.number(),
         title: z.string().min(1).optional(),
         draft: z.boolean().optional(),
-        textBlocks: z
+        content: z
           .array(
             z.object({
-              index: z.number(),
-              content: z.string(),
-            }),
-          )
-          .optional(),
-        imageBlocks: z
-          .array(
-            z.object({
-              index: z.number(),
-              slug: z.string(),
+              contentType: z.enum(["text", "image", "video"]),
+              data: z.string(),
             }),
           )
           .optional(),
@@ -266,7 +230,7 @@ export const appRouter = t.router({
     .mutation(async (opts) => {
       await verifyAuth(opts.ctx.req);
 
-      const { id, textBlocks, imageBlocks, ...postUpdates } = opts.input;
+      const { id, content, ...postUpdates } = opts.input;
 
       const updatedPost = await db
         .update(posts)
@@ -278,35 +242,18 @@ export const appRouter = t.router({
         throw new Error("Post not found");
       }
 
-      // If textBlocks provided, replace them
-      if (textBlocks !== undefined) {
-        // Delete existing text blocks
-        await db.delete(postText).where(eq(postText.postId, id));
+      // If content provided, replace all content blocks
+      if (content !== undefined) {
+        // Delete existing content blocks
+        await db.delete(postContent).where(eq(postContent.postId, id));
 
-        // Insert new text blocks
-        if (textBlocks.length > 0) {
-          await db.insert(postText).values(
-            textBlocks.map((block) => ({
+        // Insert new content blocks
+        if (content.length > 0) {
+          await db.insert(postContent).values(
+            content.map((block) => ({
               postId: id,
-              index: block.index,
-              content: block.content,
-            })),
-          );
-        }
-      }
-
-      // If imageBlocks provided, replace them
-      if (imageBlocks !== undefined) {
-        // Delete existing image blocks
-        await db.delete(postImages).where(eq(postImages.postId, id));
-
-        // Insert new image blocks
-        if (imageBlocks.length > 0) {
-          await db.insert(postImages).values(
-            imageBlocks.map((block) => ({
-              postId: id,
-              index: block.index,
-              slug: block.slug,
+              contentType: block.contentType,
+              data: block.data,
             })),
           );
         }
@@ -323,30 +270,14 @@ export const appRouter = t.router({
         throw new Error("Failed to retrieve updated post");
       }
 
-      const textBlocksResult = await db
+      const contentResult = await db
         .select()
-        .from(postText)
-        .where(eq(postText.postId, id))
-        .orderBy(asc(postText.index));
-
-      const imageBlocksResult = await db
-        .select()
-        .from(postImages)
-        .where(eq(postImages.postId, id))
-        .orderBy(asc(postImages.index));
+        .from(postContent)
+        .where(eq(postContent.postId, id));
 
       return {
         post: postResult[0],
-        textBlocks: textBlocksResult.map((block) => ({
-          id: block.id,
-          index: block.index,
-          content: block.content,
-        })),
-        imageBlocks: imageBlocksResult.map((block) => ({
-          id: block.id,
-          index: block.index,
-          slug: block.slug,
-        })),
+        content: contentResult,
       };
     }),
 
@@ -355,10 +286,8 @@ export const appRouter = t.router({
 
     const postId = opts.input;
 
-    // Delete text and image blocks (optional, CASCADE will handle but explicit is safer)
-    await db.delete(postImages).where(eq(postImages.postId, postId));
-
-    await db.delete(postText).where(eq(postText.postId, postId));
+    // Delete content blocks (optional, CASCADE will handle but explicit is safer)
+    await db.delete(postContent).where(eq(postContent.postId, postId));
 
     // Delete post
     const result = await db

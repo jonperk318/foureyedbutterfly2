@@ -6,7 +6,10 @@ import {
   varchar,
   boolean,
   integer,
+  pgEnum,
 } from "drizzle-orm/pg-core";
+
+export const contentTypeEnum = pgEnum("contentType", ["text", "image", "video"])
 
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
@@ -15,20 +18,11 @@ export const posts = pgTable("posts", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const postText = pgTable("post_text", {
+export const postContent = pgTable("post_content", {
   id: serial("id").primaryKey(),
   postId: integer("post_id")
     .notNull()
     .references(() => posts.id, { onDelete: "cascade" }),
-  index: integer("index").notNull(),
-  content: text("content").notNull(),
-});
-
-export const postImages = pgTable("post_images", {
-  id: serial("id").primaryKey(),
-  postId: integer("post_id")
-    .notNull()
-    .references(() => posts.id, { onDelete: "cascade" }),
-  index: integer("index").notNull(),
-  slug: text("slug").notNull(),
+  contentType: contentTypeEnum(),
+  data: text("data").notNull(),
 });

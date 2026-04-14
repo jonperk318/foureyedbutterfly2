@@ -1,11 +1,11 @@
 {
-  "id": "02765f06-7289-4282-88c7-684f51d1af1f",
+  "id": "abf71f74-8de2-4bb5-baf4-9edaacaf15f6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.post_images": {
-      "name": "post_images",
+    "public.post_content": {
+      "name": "post_content",
       "schema": "",
       "columns": {
         "id": {
@@ -20,14 +20,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "index": {
-          "name": "index",
-          "type": "integer",
+        "contentType": {
+          "name": "contentType",
+          "type": "contentType",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "slug": {
-          "name": "slug",
+        "data": {
+          "name": "data",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -35,59 +36,16 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "post_images_post_id_posts_id_fk": {
-          "name": "post_images_post_id_posts_id_fk",
-          "tableFrom": "post_images",
+        "post_content_post_id_posts_id_fk": {
+          "name": "post_content_post_id_posts_id_fk",
+          "tableFrom": "post_content",
           "tableTo": "posts",
-          "columnsFrom": ["post_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.post_text": {
-      "name": "post_text",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "post_id": {
-          "name": "post_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "index": {
-          "name": "index",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "post_text_post_id_posts_id_fk": {
-          "name": "post_text_post_id_posts_id_fk",
-          "tableFrom": "post_text",
-          "tableTo": "posts",
-          "columnsFrom": ["post_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "post_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -138,7 +96,17 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.contentType": {
+      "name": "contentType",
+      "schema": "public",
+      "values": [
+        "text",
+        "image",
+        "video"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Upload } from '../components/upload'
-import { MediaGallery } from '../components/media-gallery'
+import { DeleteMedia } from '../components/delete-media'
 
 export const Route = createFileRoute('/create/media')({
   component: RouteComponent,
@@ -14,7 +14,7 @@ function RouteComponent() {
         <Upload />
       </div>
       <div className={`bg-base-200 rounded-box shadow`}>
-        <MediaGallery />
+        <DeleteMedia />
       </div>
     </>
   )

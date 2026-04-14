@@ -4,7 +4,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { IoAdd, IoImage, IoVideocam, IoDocumentText } from "react-icons/io5";
 
 import { trpc } from "../router";
-import { postText, postImages } from "../server/schema";
+import { postContent } from "../server/schema";
+import { SelectMedia } from "../components/select-media";
 
 export const Route = createFileRoute("/create/write/{-$postId}")({
   component: RouteComponent,
@@ -14,21 +15,23 @@ export const Route = createFileRoute("/create/write/{-$postId}")({
   },
 });
 
-type PostText = Omit<typeof postText.$inferSelect, "id" | "postId">;
-type PostImage = Omit<typeof postImages.$inferSelect, "id" | "postId">;
-export type PostContent = (PostText | PostImage)[];
+export type PostContent = Omit<typeof postContent.$inferSelect, "id" | "postId">[]
+
+type NewBlockProps = {
+  index: number
+}
 
 function RouteComponent() {
   const postId = Route.useParams({ select: (d) => d.postId });
   const postQuery = postId ? useQuery(trpc.getPost.queryOptions(postId)) : null;
 
-  const [postContent, setPostContent] = useState<PostContent>(
+  const [content, setContent] = useState<PostContent>(
     postQuery?.data ? postQuery.data.content : [],
   );
 
-  const NewBlock = () => {
+  const NewBlock = ({index}: NewBlockProps) => {
     return (
-      <div className={`divider divider-primary w-full mb-24`}>
+      <div className={`divider divider-primary w-full`}>
         <div className={`dropdown dropdown-hover dropdown-center`}>
           <div
             tabIndex={0}
@@ -39,11 +42,11 @@ function RouteComponent() {
           </div>
           <ul
             tabIndex={-1}
-            className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-32 shadow mt-2`}
+            className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-32 shadow`}
           >
             <li
               onClick={() =>
-                setPostContent((prev) => [...prev, { index: 0, slug: "" }])
+                setContent((prev) => [...prev.slice(0, index), { contentType: "image", data: "" }, ...prev.slice(index)])
               }
             >
               <a>
@@ -66,25 +69,31 @@ function RouteComponent() {
     );
   };
 
+  console.log(content)
+
   return (
     <>
-      <NewBlock />
-      {postContent.map((block) => {
+      <NewBlock index={0} />
+      {content.map((block, i) => {
         return (
-          <div key={block.index}>
+          <div key={`${i} ${block.data}`}>
             <div className={`flex`}>
-              {"slug" in block ? (
-                <div className={``}>
-                  <div>{block.slug}</div>
+              {block.contentType === "image" ? (
+                <div className={`flex flex-col place-items-center gap-4 pb-2`}>
+                  <div className={`bg-base-200 rounded-box shadow h-100 overflow-y-auto`}>
+                    <SelectMedia mediaType="image" index={i} content={content} setContent={setContent} />
+                  </div>
+                  <div className={`badge ${block.data === "" ? "badge-warning" : "badge-accent"} badge-xl p-4`}>{block.data === "" ? "Please select a file" : block.data}</div>
                 </div>
               ) : (
-                <div>{block.content}</div>
+                <div>{block.data}</div>
               )}
             </div>
-            <NewBlock />
+            <NewBlock index={i + 1} />
           </div>
         );
       })}
+      <div className={`h-12`}></div>
     </>
   );
 }
