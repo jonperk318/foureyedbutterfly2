@@ -6,7 +6,13 @@ import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { routeTree } from "./routeTree.gen";
 import type { AppRouter } from "./server/trpc";
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60, // 1 minute
+    },
+  },
+});
 
 export const trpc = createTRPCOptionsProxy<AppRouter>({
   client: createTRPCClient<AppRouter>({

@@ -383,9 +383,29 @@ export const appRouter = t.router({
     };
   }),
 
-  media: t.procedure.query(async () => {
+  getAllMedia: t.procedure.query(async () => {
     const files = await imagekit.assets.list({ path: "/posts" });
     return files;
+  }),
+
+  deleteMedia: t.procedure.input(z.array(z.string())).mutation(async (opts) => {
+    const allAssets = await imagekit.assets.list({ path: "/posts" });
+
+    const fileIdsToDelete = allAssets
+      .filter(asset => opts.input.includes(asset.name))
+      .map(asset => asset.fileId);
+
+    if (fileIdsToDelete.length === 0) {
+      return { success: true, deleted: 0 };
+    }
+
+    const response = await imagekit.files.bulk.delete({ fileIds: fileIdsToDelete });
+
+    return {
+      success: true,
+      deleted: fileIdsToDelete.length,
+      response,
+    };
   })
 });
 

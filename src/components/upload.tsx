@@ -17,7 +17,8 @@ export const Upload = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortController = new AbortController();
   const [image, setImage] = useState<null | string>(null);
-  const { data: authParams, refetch: refetchAuthParams } = useQuery(trpc.uploadImageAuth.queryOptions())
+  const authParamsQuery = useQuery({...trpc.uploadImageAuth.queryOptions(), staleTime: 1000 * 60 * 60}) // 1 hour
+  const mediaQuery = useQuery({...trpc.getAllMedia.queryOptions(), refetchInterval: 1000 * 15,}) // 15 seconds
 
   const onImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -26,7 +27,7 @@ export const Upload = () => {
   };
 
   const onReloadClick = () => {
-    fileInputRef.current = null;
+    fileInputRef.current.value = "";
     setImage(null);
     setProgress(0);
   };
@@ -40,9 +41,9 @@ export const Upload = () => {
 
     const file = fileInput.files[0];
 
-    refetchAuthParams();
-    if (!authParams) return;
-    const { signature, expire, token, publicKey } = authParams;
+    authParamsQuery.refetch();
+    if (!authParamsQuery.data) return;
+    const { signature, expire, token, publicKey } = authParamsQuery.data;
 
     try {
       const uploadResponse = await upload({
@@ -59,6 +60,7 @@ export const Upload = () => {
         abortSignal: abortController.signal,
       }).then(() => {
         toast.success("File uploaded successfully!");
+        mediaQuery.refetch();
       });
       console.log("Upload response:", uploadResponse);
     } catch (error) {
@@ -121,7 +123,7 @@ export const Upload = () => {
       >
         <h1 className={`sm:w-sm`}>Upload progress: </h1>
         <progress
-          value={progress}
+          value={Math.ceil(progress)}
           max={100}
           className={`progress progress-secondary mr-4`}
         />
