@@ -9,7 +9,7 @@ export const Route = createFileRoute('/create')({
 
 function RouteComponent() {
   return (
-    <div className={`flex flex-col w-full py-4 px-12`}>
+    <div className={`flex flex-col w-full py-4 px-6 md:px-12`}>
       <Show when="signed-in">
         <Outlet />
       </Show>

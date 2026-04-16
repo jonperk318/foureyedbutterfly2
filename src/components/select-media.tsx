@@ -22,7 +22,7 @@ export const SelectMedia = ({mediaType, index, content, setContent}: SelectMedia
     <div className={`p-3 md:p-4`}>
       {mediaQuery.data ? (
         <>
-          <div className={`flex flex-col md:flex-row justify-around md:justify-between items-center h-60 md:h-24`}>
+          <div className={`flex flex-col md:flex-row justify-around md:justify-between items-center h-30 md:h-24`}>
             <h1 className={`text-sm lg:text-lg`}>Select the {mediaType} to place within this content block</h1>
             <IoReload
               className={`size-7 hover:cursor-pointer`}
@@ -31,7 +31,7 @@ export const SelectMedia = ({mediaType, index, content, setContent}: SelectMedia
           </div>
           <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4`}>
             {mediaQuery.data.map((file) => (
-              <div className={`indicator rounded-box shadow-sm bg-base-100 p-2 md:p-3 w-full place-items-center justify-center`} key={file.name}>
+              <div className={`indicator rounded-box shadow-sm bg-base-100 p-2 md:p-3 w-full items-center justify-center`} key={file.name}>
                 <span className={`indicator-item`}>
                   <input type="radio" className={`radio radio-accent`} name="select-file" onChange={() => setContent(prev => prev.map((block, i) => (file.name && i === index) ? {...block, data: file.name} : block))} defaultChecked={content[index].data === file.name} />
                 </span>

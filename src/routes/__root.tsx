@@ -69,7 +69,7 @@ function RootComponent() {
               <div
                 className={`text-primary hover:text-accent dropdown dropdown-hover dropdown-center`}
               >
-                <div role="button" className={`cursor-pointer`}>
+                <div role="button" className={`cursor-pointer my-2`}>
                   <Link to="/posts" activeProps={activeProps}>
                     Posts
                   </Link>
@@ -104,7 +104,7 @@ function RootComponent() {
                 <div
                   className={`text-secondary hover:text-accent dropdown dropdown-hover dropdown-center`}
                 >
-                  <div role="button" className={`cursor-pointer`}>
+                  <div role="button" className={`cursor-pointer my-2`}>
                     Create
                   </div>
                   <ul

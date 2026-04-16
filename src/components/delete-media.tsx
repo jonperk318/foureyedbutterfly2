@@ -55,7 +55,7 @@ export const DeleteMedia = () => {
                 <IoCloseCircle className={`size-7`} />
                 Clear
               </button>
-              <button className={`btn btn-warning`} disabled={selectedFiles.length === 0} onClick={() => document.getElementById("delete-files-modal")?.showModal()}>
+              <button className={`btn btn-error`} disabled={selectedFiles.length === 0} onClick={() => document.getElementById("delete-files-modal")?.showModal()}>
                 <IoTrashBin className={`size-7`} />
                 Delete Files
               </button>
@@ -85,7 +85,7 @@ export const DeleteMedia = () => {
           </div>
           <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4`}>
             {mediaQuery.data.map((file) => (
-              <div className={`indicator rounded-box shadow-sm bg-base-100 p-2 md:p-3 w-full place-items-center justify-center`} key={file.name}>
+              <div className={`indicator rounded-box shadow-sm bg-base-100 p-2 md:p-3 w-full items-center justify-center`} key={file.name}>
                 <span className={`indicator-item`}>
                   <input type="checkbox" className={`checkbox checkbox-xl checkbox-accent`} onChange={() => toggleSelectedFiles(file.name)} checked={file.name ? selectedFiles.includes(file.name) : false} />
                 </span>
