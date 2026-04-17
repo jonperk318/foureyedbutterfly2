@@ -13,7 +13,7 @@ type NewWriteBlockProps = {
 export const NewWriteBlock = ({ index, setContent }: NewWriteBlockProps) => {
 
   const handleNewBlock = (contentType: (typeof contentTypeEnum.enumValues)[number]) => {
-    setContent((prev) => [...prev.slice(0, index), { contentType, data: "" }, ...prev.slice(index)])
+    setContent((prev) => [...prev.slice(0, index), { contentType, data: "", id: Math.random() }, ...prev.slice(index)])
   }
 
   return (
