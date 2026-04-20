@@ -13,7 +13,7 @@ import { RiInstagramFill } from "react-icons/ri";
 import { Show, useAuth, UserButton } from "@clerk/react";
 
 import type { AppRouter } from "../server/trpc";
-import { darkModeAtom } from "../utils/atoms";
+import { darkModeAtom } from "../lib/atoms";
 import FadeInDiv from "../components/fade-in-div";
 import { useAtom } from "jotai/react";
 

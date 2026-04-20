@@ -1,15 +1,9 @@
-import { Dispatch, SetStateAction } from 'react';
+import { useAtom } from "jotai";
 import ReactQuill from "react-quill-new";
 import 'react-quill-new/dist/quill.snow.css';
 
-import { PostContent } from '../routes/create.write.{-$postId}';
+import { writePostContentAtom } from "../lib/atoms";
 
-
-type TextEditorProps = {
-  index: number;
-  content: PostContent;
-  setContent: Dispatch<SetStateAction<PostContent>>;
-}
 
 const colors = [
   "var(--color-primary)",
@@ -26,13 +20,14 @@ const colors = [
   "var(--color-error)",
 ]
 
-export const TextEditor = ({ index, content, setContent }: TextEditorProps) => {
+export const TextEditor = ({ index }: { index: number }) => {
+  const [content, setContent] = useAtom(writePostContentAtom);
 
   return (
     <ReactQuill
       theme="snow"
-      className="ring-2"
-      value={content[index].data}
+      className="ring-2 min-h-24 p-2"
+      value={content[index]?.data}
       onChange={(newValue) => setContent(prev => prev.map((block, i) => i === index ? {...block, data: newValue} : block))}
       readOnly={false}
       modules={{

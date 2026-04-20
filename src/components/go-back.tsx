@@ -7,7 +7,7 @@ export const GoBack = () => {
   return (
     <div
       role="alert"
-      className={`alert alert-error alert-soft w-full mt-8 sm:mx-12 lg:mx-32 text-xl flex flex-col md:flex-row justify-between`}
+      className={`alert alert-error alert-soft mt-8 w-65 sm:w-150 md:w-180 lg:w-240 text-xl flex flex-col md:flex-row justify-between`}
     >
       <IoWarning className={`size-10`} />
       <span>Only admins can view this!</span>

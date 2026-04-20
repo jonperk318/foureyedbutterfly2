@@ -64,3 +64,78 @@
   --clerk-border-radius: 0.375rem;
   --clerk-spacing: 1rem;
 }
+
+@layer ql-editor {
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  h2 {
+    font-size: var(--text-xl);
+  }
+  h3 {
+    font-size: var(--text-lg);
+  }
+  h4 {
+    font-size: var(--text-base);
+  }
+  h5 {
+    font-size: var(--text-sm);
+  }
+  h6 {
+    font-size: var(--text-xs);
+  }
+  p {
+    font-size: var(--text-base);
+  }
+}
+
+.ql-picker.ql-font {
+  .ql-picker-item {
+    font-size: 0;
+    &:before {
+      content: attr(data-value) !important;
+      font-size: 14px;
+    }
+  }
+}
+
+.ql-picker.ql-font{
+  .ql-active {
+    &:before {
+      content: attr(data-value) !important;
+      font-size: 14px;
+    }
+  }
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Meno Banner"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Meno Banner"]::before
+{
+    font-family: "Meno Banner", cursive;;
+    content: "Meno Banner" !important;
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Adorn Copperplate"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Adorn Copperplate"]::before
+{
+    font-family: "Adorn Copperplate", sans-serif;;
+    content: "Adorn Copperplate" !important;
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Royalty Free"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Royalty Free"]::before
+{
+    font-family: "Royalty Free", cursive;;
+    content: "Royalty Free" !important;
+}
+
+/* Set content font-families */
+.ql-font-Meno-Banner {
+  font-family: "MenoBanner";
+}
+.ql-font-Adorn-Copperplate {
+  font-family: "AdornCopperplate";
+}
+.ql-font-Royalty-Free {
+  font-family: "RoyaltyFree";
+}

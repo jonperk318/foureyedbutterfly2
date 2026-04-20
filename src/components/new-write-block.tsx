@@ -1,17 +1,13 @@
-import { Dispatch, SetStateAction } from "react";
 import { IoAdd, IoDocumentText, IoImage, IoVideocam } from "react-icons/io5";
+import { useAtom } from "jotai";
 
-import { PostContent } from "../routes/create.write.{-$postId}";
 import { contentTypeEnum } from "../server/schema";
+import { writePostContentAtom } from "../lib/atoms";
 
 
-type NewWriteBlockProps = {
-  index: number;
-  setContent: Dispatch<SetStateAction<PostContent>>;
-}
+export const NewWriteBlock = ({ index }: { index: number}) => {
 
-export const NewWriteBlock = ({ index, setContent }: NewWriteBlockProps) => {
-
+  const [_, setContent] = useAtom(writePostContentAtom);
   const handleNewBlock = (contentType: (typeof contentTypeEnum.enumValues)[number]) => {
     setContent((prev) => [...prev.slice(0, index), { contentType, data: "", id: Math.random() }, ...prev.slice(index)])
   }

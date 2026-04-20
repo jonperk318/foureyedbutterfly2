@@ -1,22 +1,21 @@
 import { useQuery } from "@tanstack/react-query"
 import { MdImageNotSupported } from "react-icons/md";
-import { Dispatch, SetStateAction } from "react";
 import { IoReload } from "react-icons/io5";
 
 import { trpc } from "../router"
 import Image from "./image";
-import { PostContent } from "../routes/create.write.{-$postId}";
+import { useAtom } from "jotai";
+import { writePostContentAtom } from "../lib/atoms";
 
 
 type SelectMediaProps = {
   mediaType: "image" | "video";
   index: number;
-  content: PostContent
-  setContent: Dispatch<SetStateAction<PostContent>>
 }
 
-export const SelectMedia = ({mediaType, index, content, setContent}: SelectMediaProps) => {
+export const SelectMedia = ({ mediaType, index }: SelectMediaProps) => {
   const mediaQuery = useQuery({...trpc.getAllMedia.queryOptions(), refetchInterval: 1000 * 15,})
+  const [content, setContent] = useAtom(writePostContentAtom);
 
   return (
     <div className={`p-3 md:p-4`}>

@@ -20,12 +20,12 @@ function RouteComponent() {
         <div
           className={`absolute text-center max-w-lg bg-base-100/80 text-xl text-base-content p-8 rounded-box`}
         >
-          <h1>
+          <h2>
             &quot;I remembered that the real world was wide, and that a varied
             field of hopes and fears, of sensations and excitements, awaited
             those who had the courage to go fourth into its expanse, to seek
             real knowledge of life amidst its perils.&quot;
-          </h1>
+          </h2>
           <p className={`italic text-right pt-6 pr-16`}>&#8212; Jane Eyre</p>
         </div>
       </div>
