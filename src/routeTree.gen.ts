@@ -15,8 +15,8 @@ import { Route as CreateRouteImport } from './routes/create'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostsYearRouteImport } from './routes/posts.$year'
-import { Route as PostsPostIdRouteImport } from './routes/posts.$postId'
 import { Route as CreateMediaRouteImport } from './routes/create.media'
+import { Route as PostsYearPostIdRouteImport } from './routes/posts.$year.$postId'
 import { Route as CreateWriteChar123PostIdChar125RouteImport } from './routes/create.write.{-$postId}'
 
 const PostsRoute = PostsRouteImport.update({
@@ -49,15 +49,15 @@ const PostsYearRoute = PostsYearRouteImport.update({
   path: '/$year',
   getParentRoute: () => PostsRoute,
 } as any)
-const PostsPostIdRoute = PostsPostIdRouteImport.update({
-  id: '/$postId',
-  path: '/$postId',
-  getParentRoute: () => PostsRoute,
-} as any)
 const CreateMediaRoute = CreateMediaRouteImport.update({
   id: '/media',
   path: '/media',
   getParentRoute: () => CreateRoute,
+} as any)
+const PostsYearPostIdRoute = PostsYearPostIdRouteImport.update({
+  id: '/$postId',
+  path: '/$postId',
+  getParentRoute: () => PostsYearRoute,
 } as any)
 const CreateWriteChar123PostIdChar125Route =
   CreateWriteChar123PostIdChar125RouteImport.update({
@@ -73,9 +73,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
   '/create/media': typeof CreateMediaRoute
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/posts/$year': typeof PostsYearRoute
+  '/posts/$year': typeof PostsYearRouteWithChildren
   '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
+  '/posts/$year/$postId': typeof PostsYearPostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,9 +84,9 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
   '/create/media': typeof CreateMediaRoute
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/posts/$year': typeof PostsYearRoute
+  '/posts/$year': typeof PostsYearRouteWithChildren
   '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
+  '/posts/$year/$postId': typeof PostsYearPostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,9 +96,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
   '/create/media': typeof CreateMediaRoute
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/posts/$year': typeof PostsYearRoute
+  '/posts/$year': typeof PostsYearRouteWithChildren
   '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
+  '/posts/$year/$postId': typeof PostsYearPostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,9 +109,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/posts'
     | '/create/media'
-    | '/posts/$postId'
     | '/posts/$year'
     | '/create/write/{-$postId}'
+    | '/posts/$year/$postId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,9 +120,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/posts'
     | '/create/media'
-    | '/posts/$postId'
     | '/posts/$year'
     | '/create/write/{-$postId}'
+    | '/posts/$year/$postId'
   id:
     | '__root__'
     | '/'
@@ -131,9 +131,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/posts'
     | '/create/media'
-    | '/posts/$postId'
     | '/posts/$year'
     | '/create/write/{-$postId}'
+    | '/posts/$year/$postId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,19 +188,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsYearRouteImport
       parentRoute: typeof PostsRoute
     }
-    '/posts/$postId': {
-      id: '/posts/$postId'
-      path: '/$postId'
-      fullPath: '/posts/$postId'
-      preLoaderRoute: typeof PostsPostIdRouteImport
-      parentRoute: typeof PostsRoute
-    }
     '/create/media': {
       id: '/create/media'
       path: '/media'
       fullPath: '/create/media'
       preLoaderRoute: typeof CreateMediaRouteImport
       parentRoute: typeof CreateRoute
+    }
+    '/posts/$year/$postId': {
+      id: '/posts/$year/$postId'
+      path: '/$postId'
+      fullPath: '/posts/$year/$postId'
+      preLoaderRoute: typeof PostsYearPostIdRouteImport
+      parentRoute: typeof PostsYearRoute
     }
     '/create/write/{-$postId}': {
       id: '/create/write/{-$postId}'
@@ -225,14 +225,24 @@ const CreateRouteChildren: CreateRouteChildren = {
 const CreateRouteWithChildren =
   CreateRoute._addFileChildren(CreateRouteChildren)
 
+interface PostsYearRouteChildren {
+  PostsYearPostIdRoute: typeof PostsYearPostIdRoute
+}
+
+const PostsYearRouteChildren: PostsYearRouteChildren = {
+  PostsYearPostIdRoute: PostsYearPostIdRoute,
+}
+
+const PostsYearRouteWithChildren = PostsYearRoute._addFileChildren(
+  PostsYearRouteChildren,
+)
+
 interface PostsRouteChildren {
-  PostsPostIdRoute: typeof PostsPostIdRoute
-  PostsYearRoute: typeof PostsYearRoute
+  PostsYearRoute: typeof PostsYearRouteWithChildren
 }
 
 const PostsRouteChildren: PostsRouteChildren = {
-  PostsPostIdRoute: PostsPostIdRoute,
-  PostsYearRoute: PostsYearRoute,
+  PostsYearRoute: PostsYearRouteWithChildren,
 }
 
 const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)

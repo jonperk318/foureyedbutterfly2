@@ -171,6 +171,8 @@ export const appRouter = t.router({
           )
           .optional()
           .default([]),
+        createdAt: z.date().optional(),
+        //createdAt: z.iso.datetime().optional(),
       }),
     )
     .mutation(async (opts) => {
@@ -181,6 +183,7 @@ export const appRouter = t.router({
         .values({
           title: opts.input.title,
           draft: opts.input.draft,
+          ...(opts.input.createdAt && {createdAt: opts.input.createdAt}),
         })
         .returning();
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle, IoIosSend } from "react-icons/io";
 import { IoTrashBin } from "react-icons/io5";
 import { HiDocumentPlus } from "react-icons/hi2";
 import { useAtom } from "jotai";
@@ -11,6 +12,8 @@ import { SelectMedia } from "../components/select-media";
 import { NewWriteBlock } from "../components/new-write-block";
 import { TextEditor } from "../components/text-editor";
 import { writePostIdAtom, writePostContentAtom } from "../lib/atoms";
+import { trpc } from "../router";
+import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/create/write/{-$postId}")({
   component: RouteComponent,
@@ -28,16 +31,31 @@ function RouteComponent() {
   useEffect(() => {
     if (newPostId !== postId) setPostId(newPostId);
   }, [newPostId]);
+  const postQuery = postId ? useQuery(trpc.getPost.queryOptions(postId)) : null;
+  const navigate = useNavigate();
+
+  const [title, setTitle] = useState<string>();
   const [content, setContent] = useAtom(writePostContentAtom);
-  const [date, setDate] = useState<Date | undefined>();
+  const [date, setDate] = useState<Date | undefined>(postQuery?.data?.post.createdAt ? new Date(postQuery.data.post.createdAt) : undefined);
+  const [draft, setDraft] = useState<boolean>(!!postQuery?.data?.post.draft ? postQuery.data.post.draft : false);
+
+  const createPostMutation = useMutation(trpc.createPost.mutationOptions({
+    onSuccess: (response) => {
+      toast.success(`Post ${response.post.id} created successfully!`)
+      const year = new Date(response.post.createdAt).getFullYear();
+      navigate({ to: `/posts/${year}/${response.post.id}`});
+    },
+  }));
 
   const memoizedContent = useMemo(() => content, [content]);
 
-  console.log(content)
-
   return (
     <>
-      <div className={`flex justify-end h-0`}>
+      <div className={`flex flex-col-reverse md:flex-row justify-between`}>
+        <fieldset className="fieldset w-full text-lg">
+          <legend className="fieldset-legend ml-2">Title</legend>
+          <input type="text" className="input input-lg w-full" placeholder="Give this post a title..." onChange={(e) => setTitle(e.target.value)} value={title ? title : ""} />
+        </fieldset>
         <button className={`btn btn-error btn-soft`} onClick={() => document.getElementById("clear-new-post-modal")?.showModal()}>
           <HiDocumentPlus className={`size-7`} />
           New post
@@ -65,7 +83,7 @@ function RouteComponent() {
             <div className={`flex flex-col w-full items-center rounded-box bg-base-200 outline-4 gap-4 pb-2`}>
               <>
                 <div className={`flex flex-col md:flex-row items-center justify-between w-full p-2 gap-4`}>
-                  <div className={`badge badge-primary badge-xl`}>
+                  <div className={`badge badge-secondary badge-xl`}>
                     Block {i + 1}
                   </div>
                   <div className={`flex flex-col sm:flex-row gap-4`}>
@@ -112,13 +130,28 @@ function RouteComponent() {
           </div>
         );
       })}
-      <div className={`h-12`}>
-        <button popoverTarget="rdp-popover" className={`input input-border`} style={{ anchorName: "--rdp" } as React.CSSProperties}>
-          {date ? date.toLocaleDateString() : "Pick a custom date"}
+      <div className={`flex flex-col md:flex-row justify-between items-center gap-4 h-12`}>
+        <fieldset className={`fieldset`}>
+          <legend className="fieldset-legend ml-2 text-lg">Date</legend>
+          <button popoverTarget="rdp-popover" className={`input input-border`} style={{ anchorName: "--rdp" } as React.CSSProperties}>
+            {date ? date.toLocaleDateString() : "Pick a custom date"}
+          </button>
+          <div popover="auto" id="rdp-popover" className={`dropdown`} style={{ positionAnchor: "--rdp" } as React.CSSProperties}>
+            <DayPicker className="react-day-picker" mode="single" selected={date} onSelect={setDate} />
+          </div>
+          {!date && <p className="label ml-2 mt-2">Leave blank to use today's date</p>}
+        </fieldset>
+        <fieldset className={`fieldset`}>
+          <legend className="fieldset-legend ml-2 text-lg">Draft</legend>
+          <label className="label">
+            <input type="checkbox" className="checkbox" checked={draft} onChange={() => setDraft(!draft)} />
+            Select to mark the post as draft
+          </label>
+        </fieldset>
+        <button className={`btn btn-primary`} onClick={() => createPostMutation.mutate({ title: title ? title : "Untitled", draft, content, createdAt: date })} disabled={!title}>
+          <IoIosSend className={`size-7`} />
+          Submit
         </button>
-        <div popover="auto" id="rdp-popover" className={`dropdown`} style={{ positionAnchor: "--rdp" } as React.CSSProperties}>
-          <DayPicker className="react-day-picker" mode="single" selected={date} onSelect={setDate} />
-        </div>
       </div>
     </>
   );
