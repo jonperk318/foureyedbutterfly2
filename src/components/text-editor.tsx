@@ -20,6 +20,11 @@ const colors = [
   "var(--color-error)",
 ]
 
+const Quill = ReactQuill.Quill;
+let Font = Quill.import("formats/font");
+Font.whitelist = ["MenoBanner", "MenoBannerBold", "AdornCopperplate", "RoyaltyFree", "Cursive", "SansSerif", "Serif", "Monospace"];
+Quill.register(Font, true);
+
 export const TextEditor = ({ index }: { index: number }) => {
   const [content, setContent] = useAtom(writePostContentAtom);
 
@@ -34,12 +39,12 @@ export const TextEditor = ({ index }: { index: number }) => {
         toolbar: {
           container: [
             [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'font': Font.whitelist }],
             ["bold", "italic", "underline"],
             ['link'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             [{ 'color': colors }, { 'background': colors }],
             ['clean'],
-            [{ 'font': [] }],
             [{ 'align': [] }],
           ]
         }

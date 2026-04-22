@@ -1,9 +1,10 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { IoTrashBin } from "react-icons/io5";
 import { HiDocumentPlus } from "react-icons/hi2";
 import { useAtom } from "jotai";
+import { DayPicker } from "react-day-picker";
 
 import { postContent } from "../server/schema";
 import { SelectMedia } from "../components/select-media";
@@ -28,6 +29,7 @@ function RouteComponent() {
     if (newPostId !== postId) setPostId(newPostId);
   }, [newPostId]);
   const [content, setContent] = useAtom(writePostContentAtom);
+  const [date, setDate] = useState<Date | undefined>();
 
   const memoizedContent = useMemo(() => content, [content]);
 
@@ -35,7 +37,7 @@ function RouteComponent() {
 
   return (
     <>
-      <div className={`flex justify-end`}>
+      <div className={`flex justify-end h-0`}>
         <button className={`btn btn-error btn-soft`} onClick={() => document.getElementById("clear-new-post-modal")?.showModal()}>
           <HiDocumentPlus className={`size-7`} />
           New post
@@ -60,7 +62,7 @@ function RouteComponent() {
       {memoizedContent.map((block, i) => {
         return (
           <div key={block.id}>
-            <div className={`flex flex-col w-full items-center rounded-box bg-base-200 outline-4 outline-dotted gap-4 pb-2`}>
+            <div className={`flex flex-col w-full items-center rounded-box bg-base-200 outline-4 gap-4 pb-2`}>
               <>
                 <div className={`flex flex-col md:flex-row items-center justify-between w-full p-2 gap-4`}>
                   <div className={`badge badge-primary badge-xl`}>
@@ -84,7 +86,7 @@ function RouteComponent() {
                       Move down
                     </button>
                   </div>
-                  <button className={`btn btn-error`} onClick={() => setContent(prev => prev.filter((_, index) => index !== i))}>
+                  <button className={`btn btn-error btn-soft`} onClick={() => setContent(prev => prev.filter((_, index) => index !== i))}>
                     <IoTrashBin className={`size-7`} />
                     Delete block
                   </button>
@@ -99,7 +101,7 @@ function RouteComponent() {
                 ) : block.contentType === "video" ? (
                   <div>Uh oh! Can't do this yet :/</div>
                 ) : (
-                  <div className={`bg-base-300 rounded-box shadow h-70 overflow-y-auto w-full p-4`}>
+                  <div className={`bg-base-300 rounded-box shadow h-85 overflow-y-auto w-full p-4`}>
                     <TextEditor index={i} />
                     <div className="w-full pt-4 ql-editor" dangerouslySetInnerHTML={{ __html: block.data }} />
                   </div>
@@ -110,7 +112,14 @@ function RouteComponent() {
           </div>
         );
       })}
-      <div className={`h-12`}>Footer</div>
+      <div className={`h-12`}>
+        <button popoverTarget="rdp-popover" className={`input input-border`} style={{ anchorName: "--rdp" } as React.CSSProperties}>
+          {date ? date.toLocaleDateString() : "Pick a custom date"}
+        </button>
+        <div popover="auto" id="rdp-popover" className={`dropdown`} style={{ positionAnchor: "--rdp" } as React.CSSProperties}>
+          <DayPicker className="react-day-picker" mode="single" selected={date} onSelect={setDate} />
+        </div>
+      </div>
     </>
   );
 }

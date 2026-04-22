@@ -91,51 +91,97 @@
 
 .ql-picker.ql-font {
   .ql-picker-item {
-    font-size: 0;
-    &:before {
-      content: attr(data-value) !important;
-      font-size: 14px;
-    }
+    font-size: var(--text-sm);
+  }
+  .ql-picker-label[data-value="MenoBanner"] {
+    font-size: 10px;
+  }
+  .ql-picker-label[data-value="MenoBannerBold"] {
+    font-size: 7px;
+  }
+  .ql-picker-label[data-value="AdornCopperplate"] {
+    font-size: 7px;
   }
 }
 
-.ql-picker.ql-font{
-  .ql-active {
-    &:before {
-      content: attr(data-value) !important;
-      font-size: 14px;
-    }
-  }
-}
-
-.ql-picker.ql-font .ql-picker-label[data-value="Meno Banner"]::before,
-.ql-picker.ql-font .ql-picker-item[data-value="Meno Banner"]::before
+.ql-picker.ql-font .ql-picker-label[data-value="MenoBanner"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="MenoBanner"]::before
 {
-    font-family: "Meno Banner", cursive;;
+    font-family: "MenoBanner", sans-serif;;
     content: "Meno Banner" !important;
 }
 
-.ql-picker.ql-font .ql-picker-label[data-value="Adorn Copperplate"]::before,
-.ql-picker.ql-font .ql-picker-item[data-value="Adorn Copperplate"]::before
+.ql-picker.ql-font .ql-picker-label[data-value="MenoBannerBold"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="MenoBannerBold"]::before
 {
-    font-family: "Adorn Copperplate", sans-serif;;
+    font-family: "MenoBannerBold", sans-serif;;
+    content: "Meno Banner Bold" !important;
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="AdornCopperplate"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="AdornCopperplate"]::before
+{
+    font-family: "AdornCopperplate", serif;;
     content: "Adorn Copperplate" !important;
 }
 
-.ql-picker.ql-font .ql-picker-label[data-value="Royalty Free"]::before,
-.ql-picker.ql-font .ql-picker-item[data-value="Royalty Free"]::before
+.ql-picker.ql-font .ql-picker-label[data-value="RoyaltyFree"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="RoyaltyFree"]::before
 {
-    font-family: "Royalty Free", cursive;;
+    font-family: "RoyaltyFree", cursive;;
     content: "Royalty Free" !important;
 }
 
+.ql-picker.ql-font .ql-picker-label[data-value="Cursive"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Cursive"]::before
+{
+    font-family: cursive;
+    content: "Cursive" !important;
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="SansSerif"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="SansSerif"]::before
+{
+    font-family: sans-serif;
+    content: "Sans Serif" !important;
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Serif"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Serif"]::before
+{
+    font-family: serif;
+    content: "Serif" !important;
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Monospace"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Monospace"]::before
+{
+    font-family: monospace;
+    content: "Monospace" !important;
+}
+
 /* Set content font-families */
-.ql-font-Meno-Banner {
+.ql-font-MenoBanner {
   font-family: "MenoBanner";
 }
-.ql-font-Adorn-Copperplate {
+.ql-font-MenoBannerBold {
+  font-family: "MenoBannerBold";
+}
+.ql-font-AdornCopperplate {
   font-family: "AdornCopperplate";
 }
-.ql-font-Royalty-Free {
+.ql-font-RoyaltyFree {
   font-family: "RoyaltyFree";
+}
+.ql-font-Cursive {
+  font-family: cursive;
+}
+.ql-font-SansSerif {
+  font-family: sans-serif;
+}
+.ql-font-Serif {
+  font-family: serif;
+}
+.ql-font-Monospace {
+  font-family: monospace;
 }
