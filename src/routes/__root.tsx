@@ -11,11 +11,12 @@ import type { QueryClient } from "@tanstack/react-query";
 import { IoMoon, IoSunny } from "react-icons/io5";
 import { RiInstagramFill } from "react-icons/ri";
 import { Show, useAuth, UserButton } from "@clerk/react";
+import { useAtom } from "jotai/react";
 
 import type { AppRouter } from "../server/trpc";
 import { darkModeAtom } from "../lib/atoms";
 import FadeInDiv from "../components/fade-in-div";
-import { useAtom } from "jotai/react";
+import { postYears } from "./posts";
 
 export interface RouterAppContext {
   trpc: TRPCOptionsProxy<AppRouter>;
@@ -78,24 +79,17 @@ function RootComponent() {
                   tabIndex={-1}
                   className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-20 shadow`}
                 >
-                  <li>
-                    <Link
-                      to="/posts/2025"
-                      className={`text-primary`}
-                      activeProps={activeProps}
-                    >
-                      2025
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/posts/2026"
-                      className={`text-primary`}
-                      activeProps={activeProps}
-                    >
-                      2026
-                    </Link>
-                  </li>
+                  {postYears.map(year => (
+                    <li key={year}>
+                      <Link
+                        to={`/posts/${year}`}
+                        className={`text-primary`}
+                        activeProps={activeProps}
+                      >
+                        {year}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </FadeInDiv>

@@ -16,7 +16,7 @@ export const CustomToaster = () => {
           icon: <IoIosCheckmarkCircle className={`text-success size-7`} />,
         },
         error: {
-          icon: <IoWarning className={`text-error size-7`} />,
+          icon: <IoWarning className={`text-error min-w-12`} />,
         },
       }}
     />

@@ -2,7 +2,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { z } from "zod";
-import { eq, like, and, min, max, lt, gt } from "drizzle-orm";
+import { eq, and, min, max, lt, gt } from "drizzle-orm";
 import { verifyToken } from "@clerk/backend";
 import ImageKit from "@imagekit/nodejs";
 
@@ -52,6 +52,47 @@ type TRPCContext = Awaited<ReturnType<typeof createTRPContext>>;
 const t = initTRPC.context<TRPCContext>().create();
 
 export const appRouter = t.router({
+  getFirstImagesOfYears: t.procedure
+    .input(z.array(z.string().length(4)))
+    .output(z.array(z.object({ year: z.string(), image: z.string().nullable() })))
+    .query(async (opts) => {
+      const images: { year: string, image: string | undefined }[] = [];
+
+      for (const year of opts.input) {
+        const yearStart = new Date(`${year}-01-01T00:00:00Z`);
+        const yearEnd = new Date(`${year}-12-31T23:59:59Z`);
+
+        const firstPostOfYear = await db
+          .select({ id: posts.id })
+          .from(posts)
+          .where(and(
+            gt(posts.createdAt, yearStart),
+            lt(posts.createdAt, yearEnd)
+          ))
+          .limit(1);
+
+        if (!firstPostOfYear[0]) {
+          images.push({year, image: undefined})
+          continue
+        }
+
+        const firstImage = await db
+          .select()
+          .from(postContent)
+          .where(and(eq(postContent.postId, firstPostOfYear[0].id), eq(postContent.contentType, "image")))
+          .limit(1);
+
+        if (!firstImage[0] || !firstImage[0].data) {
+          images.push({year, image: undefined})
+          continue
+        }
+
+        images.push({year, image: firstImage[0].data})
+      }
+
+      return images;
+    }),
+
   getPostsByYear: t.procedure
     .input(
       z.object({
@@ -60,10 +101,16 @@ export const appRouter = t.router({
       }),
     )
     .query(async (opts) => {
+      const yearStart = new Date(`${opts.input.year}-01-01T00:00:00Z`);
+      const yearEnd = new Date(`${opts.input.year}-12-31T23:59:59Z`);
+
       const postsFromYear = await db
         .select()
         .from(posts)
-        .where(like(posts.createdAt, `${opts.input.year}%`))
+        .where(and(
+          gt(posts.createdAt, yearStart),
+          lt(posts.createdAt, yearEnd)
+        ))
         .limit(opts.input.limit);
 
       if (!postsFromYear || postsFromYear.length === 0) {
