@@ -2,7 +2,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { z } from "zod";
-import { eq, and, min, max, lt, gt } from "drizzle-orm";
+import { eq, and, min, max, lt, gt, or, inArray } from "drizzle-orm";
 import { verifyToken } from "@clerk/backend";
 import ImageKit from "@imagekit/nodejs";
 
@@ -56,41 +56,61 @@ export const appRouter = t.router({
     .input(z.array(z.string().length(4)))
     .output(z.array(z.object({ year: z.string(), image: z.string().nullable() })))
     .query(async (opts) => {
-      const images: { year: string, image: string | undefined }[] = [];
+      const yearRanges = opts.input.map(year => ({
+        year,
+        start: new Date(`${year}-01-01T00:00:00Z`),
+        end: new Date(`${year}-12-31T23:59:59Z`),
+      }));
 
-      for (const year of opts.input) {
-        const yearStart = new Date(`${year}-01-01T00:00:00Z`);
-        const yearEnd = new Date(`${year}-12-31T23:59:59Z`);
+      // Fetch all posts for all years in one query
+      const allPosts = await db
+        .select({ id: posts.id, createdAt: posts.createdAt })
+        .from(posts)
+        .where(
+          or(
+            ...yearRanges.map(yr =>
+              and(gt(posts.createdAt, yr.start), lt(posts.createdAt, yr.end))
+            )
+          )
+        );
 
-        const firstPostOfYear = await db
-          .select({ id: posts.id })
-          .from(posts)
-          .where(and(
-            gt(posts.createdAt, yearStart),
-            lt(posts.createdAt, yearEnd)
-          ))
-          .limit(1);
-
-        if (!firstPostOfYear[0]) {
-          images.push({year, image: undefined})
-          continue
+      // Map posts to their years and get first post per year
+      const firstPostsByYear = new Map<string, number>();
+      for (const post of allPosts) {
+        const yearRange = yearRanges.find(yr =>
+          post.createdAt > yr.start && post.createdAt < yr.end
+        );
+        if (yearRange && !firstPostsByYear.has(yearRange.year)) {
+          firstPostsByYear.set(yearRange.year, post.id);
         }
-
-        const firstImage = await db
-          .select()
-          .from(postContent)
-          .where(and(eq(postContent.postId, firstPostOfYear[0].id), eq(postContent.contentType, "image")))
-          .limit(1);
-
-        if (!firstImage[0] || !firstImage[0].data) {
-          images.push({year, image: undefined})
-          continue
-        }
-
-        images.push({year, image: firstImage[0].data})
       }
 
-      return images;
+      // Fetch all images for these posts in one query
+      const postIds = Array.from(firstPostsByYear.values());
+      const firstImages = await db
+        .select()
+        .from(postContent)
+        .where(
+          and(
+            inArray(postContent.postId, postIds),
+            eq(postContent.contentType, "image")
+          )
+        );
+
+      // Map images to their posts, keeping only first image per post
+      const imagesByPostId = new Map<number, string>();
+      for (const image of firstImages) {
+        if (!imagesByPostId.has(image.postId)) {
+          imagesByPostId.set(image.postId, image.data);
+        }
+      }
+
+      // Build result array
+      return opts.input.map(year => {
+        const postId = firstPostsByYear.get(year);
+        const image = postId ? (imagesByPostId.get(postId) ?? null) : null;
+        return { year, image };
+      });
     }),
 
   getPostsByYear: t.procedure

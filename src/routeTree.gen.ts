@@ -9,21 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PostsRouteImport } from './routes/posts'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PostsYearRouteImport } from './routes/posts.$year'
+import { Route as PostsIndexRouteImport } from './routes/posts.index'
 import { Route as CreateMediaRouteImport } from './routes/create.media'
-import { Route as PostsYearPostIdRouteImport } from './routes/posts.$year.$postId'
+import { Route as PostsYearIndexRouteImport } from './routes/posts.$year.index'
 import { Route as CreateWriteChar123PostIdChar125RouteImport } from './routes/create.write.{-$postId}'
+import { Route as PostsYearPostIdIndexRouteImport } from './routes/posts.$year.$postId.index'
 
-const PostsRoute = PostsRouteImport.update({
-  id: '/posts',
-  path: '/posts',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -44,20 +39,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PostsYearRoute = PostsYearRouteImport.update({
-  id: '/$year',
-  path: '/$year',
-  getParentRoute: () => PostsRoute,
+const PostsIndexRoute = PostsIndexRouteImport.update({
+  id: '/posts/',
+  path: '/posts/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CreateMediaRoute = CreateMediaRouteImport.update({
   id: '/media',
   path: '/media',
   getParentRoute: () => CreateRoute,
 } as any)
-const PostsYearPostIdRoute = PostsYearPostIdRouteImport.update({
-  id: '/$postId',
-  path: '/$postId',
-  getParentRoute: () => PostsYearRoute,
+const PostsYearIndexRoute = PostsYearIndexRouteImport.update({
+  id: '/posts/$year/',
+  path: '/posts/$year/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CreateWriteChar123PostIdChar125Route =
   CreateWriteChar123PostIdChar125RouteImport.update({
@@ -65,28 +60,33 @@ const CreateWriteChar123PostIdChar125Route =
     path: '/write/{-$postId}',
     getParentRoute: () => CreateRoute,
   } as any)
+const PostsYearPostIdIndexRoute = PostsYearPostIdIndexRouteImport.update({
+  id: '/posts/$year/$postId/',
+  path: '/posts/$year/$postId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/create': typeof CreateRouteWithChildren
   '/login': typeof LoginRoute
-  '/posts': typeof PostsRouteWithChildren
   '/create/media': typeof CreateMediaRoute
-  '/posts/$year': typeof PostsYearRouteWithChildren
+  '/posts/': typeof PostsIndexRoute
   '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
-  '/posts/$year/$postId': typeof PostsYearPostIdRoute
+  '/posts/$year/': typeof PostsYearIndexRoute
+  '/posts/$year/$postId/': typeof PostsYearPostIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/create': typeof CreateRouteWithChildren
   '/login': typeof LoginRoute
-  '/posts': typeof PostsRouteWithChildren
   '/create/media': typeof CreateMediaRoute
-  '/posts/$year': typeof PostsYearRouteWithChildren
+  '/posts': typeof PostsIndexRoute
   '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
-  '/posts/$year/$postId': typeof PostsYearPostIdRoute
+  '/posts/$year': typeof PostsYearIndexRoute
+  '/posts/$year/$postId': typeof PostsYearPostIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -94,11 +94,11 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/create': typeof CreateRouteWithChildren
   '/login': typeof LoginRoute
-  '/posts': typeof PostsRouteWithChildren
   '/create/media': typeof CreateMediaRoute
-  '/posts/$year': typeof PostsYearRouteWithChildren
+  '/posts/': typeof PostsIndexRoute
   '/create/write/{-$postId}': typeof CreateWriteChar123PostIdChar125Route
-  '/posts/$year/$postId': typeof PostsYearPostIdRoute
+  '/posts/$year/': typeof PostsYearIndexRoute
+  '/posts/$year/$postId/': typeof PostsYearPostIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,21 +107,21 @@ export interface FileRouteTypes {
     | '/about'
     | '/create'
     | '/login'
-    | '/posts'
     | '/create/media'
-    | '/posts/$year'
+    | '/posts/'
     | '/create/write/{-$postId}'
-    | '/posts/$year/$postId'
+    | '/posts/$year/'
+    | '/posts/$year/$postId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/create'
     | '/login'
-    | '/posts'
     | '/create/media'
-    | '/posts/$year'
+    | '/posts'
     | '/create/write/{-$postId}'
+    | '/posts/$year'
     | '/posts/$year/$postId'
   id:
     | '__root__'
@@ -129,11 +129,11 @@ export interface FileRouteTypes {
     | '/about'
     | '/create'
     | '/login'
-    | '/posts'
     | '/create/media'
-    | '/posts/$year'
+    | '/posts/'
     | '/create/write/{-$postId}'
-    | '/posts/$year/$postId'
+    | '/posts/$year/'
+    | '/posts/$year/$postId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -141,18 +141,13 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CreateRoute: typeof CreateRouteWithChildren
   LoginRoute: typeof LoginRoute
-  PostsRoute: typeof PostsRouteWithChildren
+  PostsIndexRoute: typeof PostsIndexRoute
+  PostsYearIndexRoute: typeof PostsYearIndexRoute
+  PostsYearPostIdIndexRoute: typeof PostsYearPostIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/posts': {
-      id: '/posts'
-      path: '/posts'
-      fullPath: '/posts'
-      preLoaderRoute: typeof PostsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -181,12 +176,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/posts/$year': {
-      id: '/posts/$year'
-      path: '/$year'
-      fullPath: '/posts/$year'
-      preLoaderRoute: typeof PostsYearRouteImport
-      parentRoute: typeof PostsRoute
+    '/posts/': {
+      id: '/posts/'
+      path: '/posts'
+      fullPath: '/posts/'
+      preLoaderRoute: typeof PostsIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/create/media': {
       id: '/create/media'
@@ -195,12 +190,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateMediaRouteImport
       parentRoute: typeof CreateRoute
     }
-    '/posts/$year/$postId': {
-      id: '/posts/$year/$postId'
-      path: '/$postId'
-      fullPath: '/posts/$year/$postId'
-      preLoaderRoute: typeof PostsYearPostIdRouteImport
-      parentRoute: typeof PostsYearRoute
+    '/posts/$year/': {
+      id: '/posts/$year/'
+      path: '/posts/$year'
+      fullPath: '/posts/$year/'
+      preLoaderRoute: typeof PostsYearIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/create/write/{-$postId}': {
       id: '/create/write/{-$postId}'
@@ -208,6 +203,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/create/write/{-$postId}'
       preLoaderRoute: typeof CreateWriteChar123PostIdChar125RouteImport
       parentRoute: typeof CreateRoute
+    }
+    '/posts/$year/$postId/': {
+      id: '/posts/$year/$postId/'
+      path: '/posts/$year/$postId'
+      fullPath: '/posts/$year/$postId/'
+      preLoaderRoute: typeof PostsYearPostIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -225,34 +227,14 @@ const CreateRouteChildren: CreateRouteChildren = {
 const CreateRouteWithChildren =
   CreateRoute._addFileChildren(CreateRouteChildren)
 
-interface PostsYearRouteChildren {
-  PostsYearPostIdRoute: typeof PostsYearPostIdRoute
-}
-
-const PostsYearRouteChildren: PostsYearRouteChildren = {
-  PostsYearPostIdRoute: PostsYearPostIdRoute,
-}
-
-const PostsYearRouteWithChildren = PostsYearRoute._addFileChildren(
-  PostsYearRouteChildren,
-)
-
-interface PostsRouteChildren {
-  PostsYearRoute: typeof PostsYearRouteWithChildren
-}
-
-const PostsRouteChildren: PostsRouteChildren = {
-  PostsYearRoute: PostsYearRouteWithChildren,
-}
-
-const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   CreateRoute: CreateRouteWithChildren,
   LoginRoute: LoginRoute,
-  PostsRoute: PostsRouteWithChildren,
+  PostsIndexRoute: PostsIndexRoute,
+  PostsYearIndexRoute: PostsYearIndexRoute,
+  PostsYearPostIdIndexRoute: PostsYearPostIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

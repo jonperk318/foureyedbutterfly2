@@ -16,7 +16,7 @@ import { useAtom } from "jotai/react";
 import type { AppRouter } from "../server/trpc";
 import { darkModeAtom } from "../lib/atoms";
 import FadeInDiv from "../components/fade-in-div";
-import { postYears } from "./posts";
+import { postYears } from "./posts.index";
 
 export interface RouterAppContext {
   trpc: TRPCOptionsProxy<AppRouter>;
