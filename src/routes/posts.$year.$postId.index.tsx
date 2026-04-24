@@ -8,6 +8,8 @@ import { NoResultsFound } from "../components/ui/no-results-found";
 import { dateToString } from "../utils/date-to-string";
 import { Show } from "@clerk/react";
 import { HiOutlinePencilAlt } from "react-icons/hi";
+import { useAtom } from "jotai";
+import { writePostIdAtom } from "../lib/atoms";
 
 export const Route = createFileRoute("/posts/$year/$postId/")({
   component: RouteComponent,
@@ -19,6 +21,7 @@ export const Route = createFileRoute("/posts/$year/$postId/")({
 
 function RouteComponent() {
   const postId = Route.useParams({ select: (d) => d.postId });
+  const [_, setWritePostId] = useAtom(writePostIdAtom);
   const postQuery = useQuery(trpc.getPost.queryOptions(postId));
   const navigate = useNavigate();
 
@@ -77,9 +80,10 @@ function RouteComponent() {
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 1.05 }}>
                 <HiOutlinePencilAlt
                   className={`size-10 hover:cursor-pointer text-primary`}
-                  onClick={() =>
-                    navigate({ to: `/create/write/${postQuery.data.post.id}` })
-                  }
+                  onClick={() => {
+                    setWritePostId(postId);
+                    navigate({ to: "/create/write" })
+                  }}
                 />
               </motion.div>
             </Show>

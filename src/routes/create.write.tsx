@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   IoIosArrowDropdownCircle,
   IoIosArrowDropupCircle,
@@ -10,6 +10,7 @@ import { IoTrashBin } from "react-icons/io5";
 import { HiDocumentPlus } from "react-icons/hi2";
 import { useAtom } from "jotai";
 import { DayPicker } from "react-day-picker";
+import toast from "react-hot-toast";
 
 import { postContent } from "../server/schema";
 import { SelectMedia } from "../components/select-media";
@@ -17,26 +18,20 @@ import { NewWriteBlock } from "../components/new-write-block";
 import { TextEditor } from "../components/text-editor";
 import { writePostIdAtom, writePostContentAtom } from "../lib/atoms";
 import { trpc } from "../router";
-import toast from "react-hot-toast";
+import { Spinner } from "../components/ui/spinner";
 
-export const Route = createFileRoute("/create/write/{-$postId}")({
+export const Route = createFileRoute("/create/write")({
   component: RouteComponent,
-  loader: async ({ context: { trpc, queryClient }, params: { postId } }) => {
-    if (postId)
-      await queryClient.ensureQueryData(trpc.getPost.queryOptions(postId));
-  },
 });
 
 export type PostContent = Omit<typeof postContent.$inferSelect, "postId">[];
 
 function RouteComponent() {
-  const [postId, setPostId] = useAtom(writePostIdAtom);
-  const newPostId = Route.useParams({ select: (d) => d.postId });
-  setPostId(newPostId);
-  const postQuery = postId ? useQuery(trpc.getPost.queryOptions(postId)) : null;
   const navigate = useNavigate();
+  const [writePostId, setWritePostId] = useAtom(writePostIdAtom);
+  const postQuery = useQuery(trpc.getPost.queryOptions(writePostId));
 
-  const [title, setTitle] = useState<string>();
+  const [title, setTitle] = useState<string>(postQuery?.data?.post.title || "");
   const [content, setContent] = useAtom(writePostContentAtom);
   const [date, setDate] = useState<Date | undefined>(
     postQuery?.data?.post.createdAt
@@ -46,6 +41,12 @@ function RouteComponent() {
   const [draft, setDraft] = useState<boolean>(
     !!postQuery?.data?.post.draft ? postQuery.data.post.draft : false,
   );
+
+  useEffect(() => {
+    if (postQuery?.data?.content) {
+      setContent(postQuery.data.content);
+    }
+  }, [])
 
   const createPostMutation = useMutation(
     trpc.createPost.mutationOptions({
@@ -57,7 +58,19 @@ function RouteComponent() {
     }),
   );
 
+  const updatePostMutation = useMutation(
+    trpc.updatePost.mutationOptions({
+      onSuccess: (response) => {
+        toast.success(`Post ${response.post.id} updated successfully!`);
+        const year = new Date(response.post.createdAt).getFullYear();
+        navigate({ to: `/posts/${year}/${response.post.id}` });
+      },
+    }),
+  );
+
   const memoizedContent = useMemo(() => content, [content]);
+
+  if (postQuery.isPending) return <Spinner />
 
   return (
     <>
@@ -96,12 +109,21 @@ function RouteComponent() {
                   Cancel
                 </button>
               </form>
-              <button
-                className={`btn btn-warning btn-soft`}
-                onClick={() => setContent([])}
-              >
-                <Link to="/create/write">Leave page</Link>
-              </button>
+              <form method="dialog">
+                <button
+                  className={`btn btn-warning btn-soft`}
+                  id="delete-files-modal-cancel"
+                  onClick={() => {
+                    setWritePostId(null);
+                    setContent([]);
+                    setTitle("");
+                    setDate(undefined);
+                    setDraft(false);
+                  }}
+                >
+                  Reset page
+                </button>
+              </form>
             </div>
           </div>
         </dialog>
@@ -197,7 +219,7 @@ function RouteComponent() {
         );
       })}
       <div
-        className={`flex flex-col md:flex-row justify-between items-center gap-4 h-12`}
+        className={`flex flex-col md:flex-row justify-between items-center gap-4 h-12 pb-8`}
       >
         <fieldset className={`fieldset`}>
           <legend className="fieldset-legend ml-2 text-lg">Date</legend>
@@ -239,18 +261,32 @@ function RouteComponent() {
         </fieldset>
         <button
           className={`btn btn-primary`}
-          onClick={() =>
-            createPostMutation.mutate({
-              title: title ? title : "Untitled",
-              draft,
-              content,
-              createdAt: date,
-            })
-          }
-          disabled={!title}
+          onClick={() => {
+            if (writePostId && postQuery.data) {
+              updatePostMutation.mutate({
+                id: postQuery.data.post.id,
+                ...(title !== postQuery.data?.post.title && {title: title || "Untitled"}),
+                ...(draft !== postQuery.data?.post.draft && {draft}),
+                content,
+                ...(postQuery.data.post.createdAt && date !== new Date(postQuery.data?.post.createdAt) && { createdAt: date ? String(date) : undefined }),
+              });
+            } else {
+              createPostMutation.mutate({
+                title: title ? title : "Untitled",
+                draft,
+                content,
+                createdAt: date ? String(date) : undefined,
+              })
+            }
+          }}
+          disabled={!title || createPostMutation.isPending || updatePostMutation.isPending}
         >
           <IoIosSend className={`size-7`} />
-          Submit
+          {createPostMutation.isPending || updatePostMutation.isPending ? (
+            <span className={`loading loading-spinner`} />
+          ) : (
+            "Submit"
+          )}
         </button>
       </div>
     </>

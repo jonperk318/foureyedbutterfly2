@@ -41,7 +41,7 @@ function RouteComponent() {
               key={postData.post.title}
             >
               <motion.div
-                className={`hero-content flex-col lg:flex-row gap-16`}
+                className={`hero-content flex-col lg:flex-row gap-8 lg:gap-16`}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 1.05 }}
               >
@@ -53,7 +53,7 @@ function RouteComponent() {
                         : "fish.jpeg"
                     }
                     alt={postData.post.title}
-                    className={`max-w-xl min-w-sm`}
+                    className={`max-h-70 w-auto`}
                   />
                 )}
                 <div className={`flex flex-col gap-8 text-4xl`}>
@@ -73,7 +73,7 @@ function RouteComponent() {
                         : "fish.jpeg"
                     }
                     alt={postData.post.title}
-                    className={`max-w-lg`}
+                    className={`max-h-70 w-auto`}
                   />
                 )}
               </motion.div>
