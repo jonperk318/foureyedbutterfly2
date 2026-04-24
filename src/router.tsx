@@ -1,5 +1,9 @@
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
-import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import toast from "react-hot-toast";
@@ -7,6 +11,7 @@ import { useAuth } from "@clerk/react";
 
 import { routeTree } from "./routeTree.gen";
 import type { AppRouter } from "./server/trpc";
+import { Spinner } from "./components/ui/spinner";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,9 +21,7 @@ export const queryClient = new QueryClient({
     mutations: {
       onError: (error: any) => {
         const message =
-          error?.message ||
-          error?.data?.message ||
-          "An error occurred";
+          error?.message || error?.data?.message || "An error occurred";
         toast.error(message);
       },
     },
@@ -51,10 +54,10 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
           try {
             const token = await tokenGetter();
             return {
-              Authorization: token ? `Bearer ${token}` : '',
+              Authorization: token ? `Bearer ${token}` : "",
             };
           } catch (error) {
-            const message = `Failed to get token: ${error}`
+            const message = `Failed to get token: ${error}`;
             console.error(message);
             toast.error(message);
             return {};
@@ -75,11 +78,7 @@ export function createRouter() {
       trpc,
       queryClient,
     },
-    defaultPendingComponent: () => (
-      <div className={`p-2 text-2xl`}>
-        <div className={`loading loading-spinner text-secondary`} />
-      </div>
-    ),
+    defaultPendingComponent: () => <Spinner />,
     Wrap: function WrapComponent({ children }) {
       const { getToken } = useAuth();
       setTokenGetter(getToken);

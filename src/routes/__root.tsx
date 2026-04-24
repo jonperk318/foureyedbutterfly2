@@ -17,6 +17,7 @@ import type { AppRouter } from "../server/trpc";
 import { darkModeAtom } from "../lib/atoms";
 import FadeInDiv from "../components/fade-in-div";
 import { postYears } from "./posts.index";
+import { Spinner } from "../components/ui/spinner";
 
 export interface RouterAppContext {
   trpc: TRPCOptionsProxy<AppRouter>;
@@ -25,7 +26,7 @@ export interface RouterAppContext {
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootComponent,
-  pendingComponent: () => <div className={`loading-spinner`}></div>,
+  pendingComponent: () => <Spinner />,
 });
 
 function RootComponent() {
@@ -79,7 +80,7 @@ function RootComponent() {
                   tabIndex={-1}
                   className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-20 shadow`}
                 >
-                  {postYears.map(year => (
+                  {postYears.map((year) => (
                     <li key={year}>
                       <Link
                         to={`/posts/${year}`}

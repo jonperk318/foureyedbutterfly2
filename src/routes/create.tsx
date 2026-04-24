@@ -1,11 +1,11 @@
-import { Show } from '@clerk/react'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { Show } from "@clerk/react";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-import { GoBack } from '../components/go-back'
+import { GoBack } from "../components/ui/go-back";
 
-export const Route = createFileRoute('/create')({
+export const Route = createFileRoute("/create")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
   return (
@@ -19,5 +19,5 @@ function RouteComponent() {
         </div>
       </Show>
     </div>
-  )
+  );
 }

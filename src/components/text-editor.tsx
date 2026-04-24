@@ -1,9 +1,8 @@
 import { useAtom } from "jotai";
 import ReactQuill from "react-quill-new";
-import 'react-quill-new/dist/quill.snow.css';
+import "react-quill-new/dist/quill.snow.css";
 
 import { writePostContentAtom } from "../lib/atoms";
-
 
 const colors = [
   "var(--color-primary)",
@@ -18,11 +17,20 @@ const colors = [
   "var(--color-success)",
   "var(--color-warning)",
   "var(--color-error)",
-]
+];
 
 const Quill = ReactQuill.Quill;
 let Font = Quill.import("formats/font");
-Font.whitelist = ["MenoBanner", "MenoBannerBold", "AdornCopperplate", "RoyaltyFree", "Cursive", "SansSerif", "Serif", "Monospace"];
+Font.whitelist = [
+  "MenoBanner",
+  "MenoBannerBold",
+  "AdornCopperplate",
+  "RoyaltyFree",
+  "Cursive",
+  "SansSerif",
+  "Serif",
+  "Monospace",
+];
 Quill.register(Font, true);
 
 export const TextEditor = ({ index }: { index: number }) => {
@@ -33,22 +41,28 @@ export const TextEditor = ({ index }: { index: number }) => {
       theme="snow"
       className="ring-2 min-h-24 p-2"
       value={content[index]?.data}
-      onChange={(newValue) => setContent(prev => prev.map((block, i) => i === index ? {...block, data: newValue} : block))}
+      onChange={(newValue) =>
+        setContent((prev) =>
+          prev.map((block, i) =>
+            i === index ? { ...block, data: newValue } : block,
+          ),
+        )
+      }
       readOnly={false}
       modules={{
         toolbar: {
           container: [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'font': Font.whitelist }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ font: Font.whitelist }],
             ["bold", "italic", "underline"],
-            ['link'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'color': colors }, { 'background': colors }],
-            ['clean'],
-            [{ 'align': [] }],
-          ]
-        }
+            ["link"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            [{ color: colors }, { background: colors }],
+            ["clean"],
+            [{ align: [] }],
+          ],
+        },
       }}
     />
-  )
-}
+  );
+};

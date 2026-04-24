@@ -4,13 +4,17 @@ import { useAtom } from "jotai";
 import { contentTypeEnum } from "../server/schema";
 import { writePostContentAtom } from "../lib/atoms";
 
-
-export const NewWriteBlock = ({ index }: { index: number}) => {
-
+export const NewWriteBlock = ({ index }: { index: number }) => {
   const [_, setContent] = useAtom(writePostContentAtom);
-  const handleNewBlock = (contentType: (typeof contentTypeEnum.enumValues)[number]) => {
-    setContent((prev) => [...prev.slice(0, index), { contentType, data: "", id: Math.random() }, ...prev.slice(index)])
-  }
+  const handleNewBlock = (
+    contentType: (typeof contentTypeEnum.enumValues)[number],
+  ) => {
+    setContent((prev) => [
+      ...prev.slice(0, index),
+      { contentType, data: "", id: Math.random() },
+      ...prev.slice(index),
+    ]);
+  };
 
   return (
     <div className={`divider divider-primary w-full h-24`}>
@@ -46,4 +50,3 @@ export const NewWriteBlock = ({ index }: { index: number}) => {
     </div>
   );
 };
-

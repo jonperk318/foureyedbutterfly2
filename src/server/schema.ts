@@ -9,7 +9,11 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 
-export const contentTypeEnum = pgEnum("contentType", ["text", "image", "video"])
+export const contentTypeEnum = pgEnum("contentType", [
+  "text",
+  "image",
+  "video",
+]);
 
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),

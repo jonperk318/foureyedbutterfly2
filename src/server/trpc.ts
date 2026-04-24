@@ -2,7 +2,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { z } from "zod";
-import { eq, and, min, max, lt, gt, or, inArray } from "drizzle-orm";
+import { eq, and, lt, gt, or, inArray, desc, asc } from "drizzle-orm";
 import { verifyToken } from "@clerk/backend";
 import ImageKit from "@imagekit/nodejs";
 
@@ -54,9 +54,11 @@ const t = initTRPC.context<TRPCContext>().create();
 export const appRouter = t.router({
   getFirstImagesOfYears: t.procedure
     .input(z.array(z.string().length(4)))
-    .output(z.array(z.object({ year: z.string(), image: z.string().nullable() })))
+    .output(
+      z.array(z.object({ year: z.string(), image: z.string().nullable() })),
+    )
     .query(async (opts) => {
-      const yearRanges = opts.input.map(year => ({
+      const yearRanges = opts.input.map((year) => ({
         year,
         start: new Date(`${year}-01-01T00:00:00Z`),
         end: new Date(`${year}-12-31T23:59:59Z`),
@@ -68,17 +70,17 @@ export const appRouter = t.router({
         .from(posts)
         .where(
           or(
-            ...yearRanges.map(yr =>
-              and(gt(posts.createdAt, yr.start), lt(posts.createdAt, yr.end))
-            )
-          )
+            ...yearRanges.map((yr) =>
+              and(gt(posts.createdAt, yr.start), lt(posts.createdAt, yr.end)),
+            ),
+          ),
         );
 
       // Map posts to their years and get first post per year
       const firstPostsByYear = new Map<string, number>();
       for (const post of allPosts) {
-        const yearRange = yearRanges.find(yr =>
-          post.createdAt > yr.start && post.createdAt < yr.end
+        const yearRange = yearRanges.find(
+          (yr) => post.createdAt > yr.start && post.createdAt < yr.end,
         );
         if (yearRange && !firstPostsByYear.has(yearRange.year)) {
           firstPostsByYear.set(yearRange.year, post.id);
@@ -93,8 +95,8 @@ export const appRouter = t.router({
         .where(
           and(
             inArray(postContent.postId, postIds),
-            eq(postContent.contentType, "image")
-          )
+            eq(postContent.contentType, "image"),
+          ),
         );
 
       // Map images to their posts, keeping only first image per post
@@ -106,7 +108,7 @@ export const appRouter = t.router({
       }
 
       // Build result array
-      return opts.input.map(year => {
+      return opts.input.map((year) => {
         const postId = firstPostsByYear.get(year);
         const image = postId ? (imagesByPostId.get(postId) ?? null) : null;
         return { year, image };
@@ -127,10 +129,9 @@ export const appRouter = t.router({
       const postsFromYear = await db
         .select()
         .from(posts)
-        .where(and(
-          gt(posts.createdAt, yearStart),
-          lt(posts.createdAt, yearEnd)
-        ))
+        .where(
+          and(gt(posts.createdAt, yearStart), lt(posts.createdAt, yearEnd)),
+        )
         .limit(opts.input.limit);
 
       if (!postsFromYear || postsFromYear.length === 0) {
@@ -142,7 +143,12 @@ export const appRouter = t.router({
           const firstImage = await db
             .select()
             .from(postContent)
-            .where(and(eq(postContent.postId, post.id), eq(postContent.contentType, "image")))
+            .where(
+              and(
+                eq(postContent.postId, post.id),
+                eq(postContent.contentType, "image"),
+              ),
+            )
             .limit(1);
 
           return {
@@ -190,15 +196,25 @@ export const appRouter = t.router({
         .where(eq(postContent.postId, postId));
 
       const previousPostResult = await db
-        .select({ id: max(posts.id), title: posts.title })
+        .select({
+          id: posts.id,
+          title: posts.title,
+          createdAt: posts.createdAt,
+        })
         .from(posts)
         .where(and(lt(posts.id, postId), eq(posts.draft, false)))
+        .orderBy(desc(posts.id))
         .limit(1);
 
       const nextPostResult = await db
-        .select({ id: min(posts.id), title: posts.title })
+        .select({
+          id: posts.id,
+          title: posts.title,
+          createdAt: posts.createdAt,
+        })
         .from(posts)
         .where(and(gt(posts.id, postId), eq(posts.draft, false)))
+        .orderBy(asc(posts.id))
         .limit(1);
 
       return {
@@ -213,12 +229,14 @@ export const appRouter = t.router({
           ? {
               id: previousPostResult[0].id,
               title: previousPostResult[0].title,
+              createdAt: previousPostResult[0].createdAt,
             }
           : null,
         nextPost: nextPostResult[0]
           ? {
               id: nextPostResult[0].id,
               title: nextPostResult[0].title,
+              createdAt: nextPostResult[0].createdAt,
             }
           : null,
       };
@@ -250,7 +268,7 @@ export const appRouter = t.router({
         .values({
           title: opts.input.title,
           draft: opts.input.draft,
-          ...(opts.input.createdAt && {createdAt: opts.input.createdAt}),
+          ...(opts.input.createdAt && { createdAt: opts.input.createdAt }),
         })
         .returning();
 
@@ -391,21 +409,23 @@ export const appRouter = t.router({
     const allAssets = await imagekit.assets.list({ path: "/posts" });
 
     const fileIdsToDelete = allAssets
-      .filter(asset => opts.input.includes(asset.name))
-      .map(asset => asset.fileId);
+      .filter((asset) => opts.input.includes(asset.name))
+      .map((asset) => asset.fileId);
 
     if (fileIdsToDelete.length === 0) {
       return { success: true, deleted: 0 };
     }
 
-    const response = await imagekit.files.bulk.delete({ fileIds: fileIdsToDelete });
+    const response = await imagekit.files.bulk.delete({
+      fileIds: fileIdsToDelete,
+    });
 
     return {
       success: true,
       deleted: fileIdsToDelete.length,
       response,
     };
-  })
+  }),
 });
 
 export const trpcMiddleWare = createExpressMiddleware({

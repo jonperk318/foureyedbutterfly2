@@ -40,12 +40,8 @@
           "name": "post_content_post_id_posts_id_fk",
           "tableFrom": "post_content",
           "tableTo": "posts",
-          "columnsFrom": [
-            "post_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["post_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -100,11 +96,7 @@
     "public.contentType": {
       "name": "contentType",
       "schema": "public",
-      "values": [
-        "text",
-        "image",
-        "video"
-      ]
+      "values": ["text", "image", "video"]
     }
   },
   "schemas": {},

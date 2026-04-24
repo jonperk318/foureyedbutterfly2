@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-import { Upload } from '../components/upload'
-import { DeleteMedia } from '../components/delete-media'
+import { Upload } from "../components/upload";
+import { DeleteMedia } from "../components/delete-media";
 
-export const Route = createFileRoute('/create/media')({
+export const Route = createFileRoute("/create/media")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
   return (
@@ -17,5 +17,5 @@ function RouteComponent() {
         <DeleteMedia />
       </div>
     </>
-  )
+  );
 }
