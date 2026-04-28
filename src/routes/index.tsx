@@ -14,7 +14,7 @@ function IndexComponent() {
       <div
         className={`flex w-1/2 flex-col gap-4 items-center justify-center text-xl lg:text-2xl`}
       >
-        <div className={`text-7xl lg:text-8xl font-adorn-copperplate`}>
+        <div className={`text-5xl sm:text-7xl lg:text-8xl font-adorn-copperplate`}>
           Bashful
         </div>
         <div>-ruby m.</div>

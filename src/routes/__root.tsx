@@ -1,5 +1,4 @@
 import {
-  Link,
   Outlet,
   createRootRouteWithContext,
   useRouterState,
@@ -8,16 +7,12 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type { QueryClient } from "@tanstack/react-query";
-import { IoMoon, IoSunny } from "react-icons/io5";
-import { RiInstagramFill } from "react-icons/ri";
-import { Show, useAuth, UserButton } from "@clerk/react";
-import { useAtom } from "jotai/react";
 
 import type { AppRouter } from "../server/trpc";
-import { darkModeAtom } from "../lib/atoms";
-import FadeInDiv from "../components/fade-in-div";
-import { postYears } from "./posts.index";
 import { Spinner } from "../components/ui/spinner";
+import { IoMenu } from "react-icons/io5";
+import { Navbar } from "../components/navbar";
+import { NavbarMobile } from "../components/navbar-mobile";
 
 export interface RouterAppContext {
   trpc: TRPCOptionsProxy<AppRouter>;
@@ -30,145 +25,34 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function RootComponent() {
-  const [darkMode, setDarkMode] = useAtom(darkModeAtom);
   const isFetching = useRouterState({ select: (s) => s.isLoading });
-  const { isSignedIn } = useAuth();
-
-  const fadeInInterval = 0.05;
-  const activeProps = {
-    className: `font-meno-banner-bold`,
-  };
 
   return (
     <>
-      <div className={`min-h-screen bg-base-100 font-meno-banner`}>
-        <div className={`navbar h-30 bg-base-200 py-4 px-8 shadow-lg z-20`}>
+      <div className={`min-h-screen bg-base-100 font-meno-banner max-lg:collapse`}>
+        <input id="navbar-1-toggle" className="peer hidden" type="checkbox" />
+        <label htmlFor="navbar-1-toggle" className="fixed inset-0 hidden max-lg:peer-checked:block"></label>
+        <div className={`collapse-title navbar h-30 bg-base-200 py-4 px-8 shadow-lg z-20`}>
           <div className={`navbar-start`}>
-            <div className={`font-royalty-free text-4xl`}>
+            <div className={`font-royalty-free text-3xl sm:text-4xl`}>
               Four Eyed Butterfly
             </div>
           </div>
-          <div className={`navbar-end flex gap-12 flex-none items-center`}>
-            <FadeInDiv initialDelay={0}>
-              <Link
-                className={`text-primary hover:text-accent`}
-                to="/"
-                activeProps={activeProps}
-              >
-                Home
-              </Link>
-            </FadeInDiv>
-            <FadeInDiv initialDelay={fadeInInterval}>
-              <Link
-                className={`text-primary hover:text-accent`}
-                to="/about"
-                activeProps={activeProps}
-              >
-                About
-              </Link>
-            </FadeInDiv>
-            <FadeInDiv initialDelay={fadeInInterval * 2}>
-              <div
-                className={`text-primary hover:text-accent dropdown dropdown-hover dropdown-center`}
-              >
-                <div role="button" className={`cursor-pointer my-2`}>
-                  <Link to="/posts" activeProps={activeProps}>
-                    Posts
-                  </Link>
-                </div>
-                <ul
-                  tabIndex={-1}
-                  className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-20 shadow`}
-                >
-                  {postYears.map((year) => (
-                    <li key={year}>
-                      <Link
-                        to={`/posts/${year}`}
-                        className={`text-primary`}
-                        activeProps={activeProps}
-                      >
-                        {year}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </FadeInDiv>
-            {isSignedIn ? (
-              <FadeInDiv initialDelay={fadeInInterval * 6}>
-                <div
-                  className={`text-secondary hover:text-accent dropdown dropdown-hover dropdown-center`}
-                >
-                  <div role="button" className={`cursor-pointer my-2`}>
-                    Create
-                  </div>
-                  <ul
-                    tabIndex={-1}
-                    className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-24 shadow`}
-                  >
-                    <li>
-                      <Link
-                        to="/create/media"
-                        className={`text-primary`}
-                        activeProps={activeProps}
-                      >
-                        Media
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/create/write"
-                        className={`text-primary`}
-                        activeProps={activeProps}
-                      >
-                        Write
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </FadeInDiv>
-            ) : (
-              <FadeInDiv initialDelay={fadeInInterval * 6}>
-                <Link
-                  className={`text-secondary hover:text-accent`}
-                  to="/login"
-                  activeProps={activeProps}
-                >
-                  Login
-                </Link>
-              </FadeInDiv>
-            )}
-            {/* Theme toggle */}
-            <FadeInDiv initialDelay={fadeInInterval * 10}>
-              <label className={`swap hover:text-accent`}>
-                <input
-                  type="checkbox"
-                  className={`theme-controller`}
-                  value="valentine"
-                  checked={darkMode}
-                  onClick={() => setDarkMode(!darkMode)}
-                  readOnly
-                />
-                <IoSunny className={`swap-on size-7`} />
-                <IoMoon className={`swap-off size-7`} />
-              </label>
-            </FadeInDiv>
-            {/* Instagram */}
-            <FadeInDiv initialDelay={fadeInInterval * 11}>
-              <a
-                href="https://instagram.com/rubymaghoney/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <RiInstagramFill className={`hover:text-accent size-7`} />
-              </a>
-            </FadeInDiv>
-            <Show when="signed-in">
-              <FadeInDiv>
-                <UserButton />
-              </FadeInDiv>
-            </Show>
+          <div className={`navbar-end hidden lg:flex gap-12 flex-none items-center`}>
+            <Navbar />
           </div>
+          <div className={`navbar-end lg:hidden`}>
+            <div className={`dropdown`}>
+              <label htmlFor="navbar-1-toggle" className="btn btn-lg btn-ghost lg:hidden">
+                <IoMenu className={`size-12`} />
+              </label>
+            </div>
+          </div>
+        </div>
+        <div className="collapse-content lg:hidden z-1 bg-base-300 shadow-lg">
+          <ul className="menu menu-xl flex flex-col justify-center items-center w-full">
+            <NavbarMobile />
+          </ul>
         </div>
         {isFetching ? <div className={`loading-spinner`}></div> : <Outlet />}
       </div>

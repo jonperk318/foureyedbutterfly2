@@ -18,7 +18,7 @@ function RouteComponent() {
           />
         </div>
         <div
-          className={`absolute text-center max-w-lg bg-base-100/80 text-xl text-base-content p-8 rounded-box`}
+          className={`absolute text-center max-w-lg bg-base-100/80 text-sm md:text-base lg:text-xl text-base-content p-8 m-4 rounded-box`}
         >
           <h2>
             &quot;I remembered that the real world was wide, and that a varied

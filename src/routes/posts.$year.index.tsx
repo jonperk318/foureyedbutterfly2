@@ -41,7 +41,7 @@ function RouteComponent() {
               key={postData.post.title}
             >
               <motion.div
-                className={`hero-content flex-col lg:flex-row gap-8 lg:gap-16`}
+                className={`hero-content ${i % 2 === 0 ? "flex-col" : "flex-col-reverse"} lg:flex-row gap-8 lg:gap-16`}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 1.05 }}
               >
@@ -53,10 +53,10 @@ function RouteComponent() {
                         : "fish.jpeg"
                     }
                     alt={postData.post.title}
-                    className={`max-h-70 w-auto`}
+                    className={`max-h-70 max-w-60 sm:max-w-80 md:max-w-90 ${postData.post.draft && "brightness-60 hover:brightness-100"}`}
                   />
                 )}
-                <div className={`flex flex-col gap-8 text-4xl`}>
+                <div className={`flex flex-col gap-8 text-xl md:text-3xl lg:text-4xl`}>
                   <h1 className={`text-primary`}>{postData.post.title}</h1>
                   <span className={`font-royalty-free`}>
                     {dateToString(postData.post.createdAt)}
@@ -73,7 +73,7 @@ function RouteComponent() {
                         : "fish.jpeg"
                     }
                     alt={postData.post.title}
-                    className={`max-h-70 w-auto`}
+                    className={`max-h-70 max-w-60 sm:max-w-80 md:max-w-90 ${postData.post.draft && "brightness-60 hover:brightness-100"}`}
                   />
                 )}
               </motion.div>
