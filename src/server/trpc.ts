@@ -258,7 +258,6 @@ export const appRouter = t.router({
           .optional()
           .default([]),
         createdAt: z.string().optional(),
-        //createdAt: z.iso.datetime().optional(),
       }),
     )
     .mutation(async (opts) => {
@@ -315,6 +314,7 @@ export const appRouter = t.router({
             }),
           )
           .optional(),
+        createdAt: z.string().optional(),
       }),
     )
     .mutation(async (opts) => {
@@ -324,7 +324,7 @@ export const appRouter = t.router({
 
       const updatedPost = await db
         .update(posts)
-        .set(postUpdates)
+        .set({...postUpdates, createdAt: opts.input.createdAt ? new Date(opts.input.createdAt) : undefined })
         .where(eq(posts.id, id))
         .returning();
 

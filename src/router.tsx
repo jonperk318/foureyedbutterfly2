@@ -47,21 +47,25 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
       httpBatchLink({
         url: "/trpc",
         async headers() {
-          if (!tokenGetter) {
-            return {};
-          }
-
           try {
-            const token = await tokenGetter();
-            return {
-              Authorization: token ? `Bearer ${token}` : "",
-            };
+            // First try to get token from tokenGetter (set by Wrap component)
+            let token: string | null = null;
+            if (tokenGetter) {
+              token = await tokenGetter();
+            } else {
+              // Fallback: get token directly from Clerk session
+              token = await (window as any).__clerk?.session?.getToken?.();
+            }
+            
+            if (token) {
+              return {
+                Authorization: `Bearer ${token}`,
+              };
+            }
           } catch (error) {
-            const message = `Failed to get token: ${error}`;
-            console.error(message);
-            toast.error(message);
-            return {};
+            console.error("Failed to get token:", error);
           }
+          return {};
         },
       }),
     ],

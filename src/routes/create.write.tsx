@@ -12,7 +12,6 @@ import { useAtom } from "jotai";
 import { DayPicker } from "react-day-picker";
 import toast from "react-hot-toast";
 
-import { postContent } from "../server/schema";
 import { SelectMedia } from "../components/select-media";
 import { NewWriteBlock } from "../components/new-write-block";
 import { TextEditor } from "../components/text-editor";
@@ -23,8 +22,6 @@ import { Spinner } from "../components/ui/spinner";
 export const Route = createFileRoute("/create/write")({
   component: RouteComponent,
 });
-
-export type PostContent = Omit<typeof postContent.$inferSelect, "postId">[];
 
 function RouteComponent() {
   const navigate = useNavigate();
@@ -52,7 +49,7 @@ function RouteComponent() {
     trpc.createPost.mutationOptions({
       onSuccess: (response) => {
         toast.success(`Post ${response.post.id} created successfully!`);
-        const year = new Date(response.post.createdAt).getFullYear();
+        const year = response.post.createdAt ? new Date(response.post.createdAt).getFullYear() : new Date().getFullYear();
         navigate({ to: `/posts/${year}/${response.post.id}` });
       },
     }),
@@ -62,10 +59,25 @@ function RouteComponent() {
     trpc.updatePost.mutationOptions({
       onSuccess: (response) => {
         toast.success(`Post ${response.post.id} updated successfully!`);
-        const year = new Date(response.post.createdAt).getFullYear();
+        postQuery.refetch();
+        const year = response.post.createdAt ? new Date(response.post.createdAt).getFullYear() : date?.getFullYear();
         navigate({ to: `/posts/${year}/${response.post.id}` });
       },
     }),
+  );
+
+  const deletePostMutation = useMutation(
+    trpc.deletePost.mutationOptions({
+      onSuccess: (response) => {
+        if (response.success) {
+          toast.success(`Post ${writePostId} deleted successfully!`);
+          setWritePostId(null);
+          navigate({ to: "/" });
+        } else {
+          toast.error(`Something went wrong deleting post ${writePostId}`);
+        }
+      }
+    })
   );
 
   const memoizedContent = useMemo(() => content, [content]);
@@ -74,7 +86,88 @@ function RouteComponent() {
 
   return (
     <>
-      <div className={`flex flex-col-reverse md:flex-row justify-between`}>
+      <div className={`flex flex-col gap-8`}>
+        <div className={`flex flex-col sm:flex-row justify-between items-center gap-4`}>
+          <button
+            className={`btn btn-primary btn-soft`}
+            onClick={() =>
+              document.getElementById("new-post-modal")?.showModal()
+            }
+          >
+            <HiDocumentPlus className={`size-7`} />
+            New post
+          </button>
+          <dialog id="new-post-modal" className={`modal`}>
+            <div className={`modal-box ring-warning ring-2`}>
+              <h1 className={`font-bold text-lg text-warning`}>
+                Warning! Starting a new post will clear your progress. Make sure
+                to save first!
+              </h1>
+              <div className={`modal-action`}>
+                <form method="dialog">
+                  <button
+                    className={`btn btn-soft`}
+                  >
+                    Cancel
+                  </button>
+                </form>
+                <form method="dialog">
+                  <button
+                    className={`btn btn-warning btn-soft`}
+                    onClick={() => {
+                      setWritePostId(null);
+                      setContent([]);
+                      setTitle("");
+                      setDate(undefined);
+                      setDraft(false);
+                    }}
+                  >
+                    Reset page
+                  </button>
+                </form>
+              </div>
+            </div>
+          </dialog>
+          <button
+            className={`btn btn-error btn-soft`}
+            onClick={() =>
+              document.getElementById("delete-post-modal")?.showModal()
+            }
+          >
+            <IoTrashBin className={`size-7`} />
+            Delete post
+          </button>
+          <dialog id="delete-post-modal" className={`modal`}>
+            <div className={`modal-box ring-error ring-2`}>
+              <h1 className={`font-bold text-lg text-error`}>
+                Are you sure you want to delete this post? This cannot be undone!
+              </h1>
+              <div className={`modal-action`}>
+                <form method="dialog">
+                  <button
+                    className={`btn btn-soft`}
+                  >
+                    Cancel
+                  </button>
+                </form>
+                <form method="dialog">
+                  <button
+                    className={`btn btn-error btn-soft`}
+                    onClick={() => {
+                      if (writePostId) {
+                        deletePostMutation.mutate(Number(writePostId));
+                      } else {
+                        toast.error("No post ID to delete");
+                      }
+                    }}
+                  >
+                    DELETE POST
+                  </button>
+                </form>
+              </div>
+            </div>
+          </dialog>
+        </div>
         <fieldset className="fieldset w-full text-lg">
           <legend className="fieldset-legend ml-2">Title</legend>
           <input
@@ -85,48 +178,6 @@ function RouteComponent() {
             value={title ? title : ""}
           />
         </fieldset>
-        <button
-          className={`btn btn-error btn-soft`}
-          onClick={() =>
-            document.getElementById("clear-new-post-modal")?.showModal()
-          }
-        >
-          <HiDocumentPlus className={`size-7`} />
-          New post
-        </button>
-        <dialog id="clear-new-post-modal" className={`modal`}>
-          <div className={`modal-box ring-warning ring-2`}>
-            <h1 className={`font-bold text-lg text-warning`}>
-              Warning! Starting a new post will clear your progress. Make sure
-              to save first!
-            </h1>
-            <div className={`modal-action`}>
-              <form method="dialog">
-                <button
-                  className={`btn btn-soft`}
-                  id="delete-files-modal-cancel"
-                >
-                  Cancel
-                </button>
-              </form>
-              <form method="dialog">
-                <button
-                  className={`btn btn-warning btn-soft`}
-                  id="delete-files-modal-cancel"
-                  onClick={() => {
-                    setWritePostId(null);
-                    setContent([]);
-                    setTitle("");
-                    setDate(undefined);
-                    setDraft(false);
-                  }}
-                >
-                  Reset page
-                </button>
-              </form>
-            </div>
-          </div>
-        </dialog>
       </div>
       <NewWriteBlock index={0} />
       {memoizedContent.map((block, i) => {
@@ -262,19 +313,22 @@ function RouteComponent() {
         <button
           className={`btn btn-primary`}
           onClick={() => {
+            const submittedContent = content.map(block => ({contentType: block.contentType ? block.contentType : "text", data: block.data }));
             if (writePostId && postQuery.data) {
-              updatePostMutation.mutate({
+              const thing = {
                 id: postQuery.data.post.id,
                 ...(title !== postQuery.data?.post.title && {title: title || "Untitled"}),
                 ...(draft !== postQuery.data?.post.draft && {draft}),
-                content,
+                ...(submittedContent !== postQuery.data?.content && {content: submittedContent}),
                 ...(postQuery.data.post.createdAt && date !== new Date(postQuery.data?.post.createdAt) && { createdAt: date ? String(date) : undefined }),
-              });
+              }
+              console.log(thing)
+              updatePostMutation.mutate(thing);
             } else {
               createPostMutation.mutate({
                 title: title ? title : "Untitled",
                 draft,
-                content,
+                content: submittedContent,
                 createdAt: date ? String(date) : undefined,
               })
             }
