@@ -39,7 +39,7 @@ export const NavbarMobile = () => {
       <li>
         <details>
         <summary>
-          <Link to="/posts" activeProps={activeProps}>
+          <Link to="/posts" activeProps={activeProps} className={`text-primary hover:text-accent`}>
             Posts
           </Link>
         </summary>
@@ -48,7 +48,7 @@ export const NavbarMobile = () => {
             <li key={year}>
               <Link
                 to={`/posts/${year}`}
-                className={`text-primary`}
+                className={`text-primary hover:text-accent`}
                 activeProps={activeProps}
               >
                 {year}
@@ -61,12 +61,12 @@ export const NavbarMobile = () => {
       <li>
         {isSignedIn ? (
           <details>
-            <summary>Create</summary>
-            <ul className={`p-2`} >
+            <summary className={`text-secondary hover:text-accent`}>Create</summary>
+            <ul className={`p-2`}>
               <li>
                 <Link
                   to="/create/media"
-                  className={`text-primary`}
+                  className={`text-secondary hover:text-accent`}
                   activeProps={activeProps}
                 >
                   Media
@@ -75,7 +75,7 @@ export const NavbarMobile = () => {
               <li>
                 <Link
                   to="/create/write"
-                  className={`text-primary`}
+                  className={`text-secondary hover:text-accent`}
                   activeProps={activeProps}
                 >
                   Write
@@ -93,35 +93,29 @@ export const NavbarMobile = () => {
           </Link>
         )}
       </li>
-      <li>
-        {/* Theme toggle */}
-        <label className={`swap hover:text-accent`}>
-          <input
-            type="checkbox"
-            className={`theme-controller`}
-            value="valentine"
-            checked={darkMode}
-            onClick={() => setDarkMode(!darkMode)}
-            readOnly
-          />
-          <IoSunny className={`swap-on size-7`} />
-          <IoMoon className={`swap-off size-7`} />
-        </label>
-      </li>
-      <li>
-        {/* Instagram */}
-        <a
-          href="https://instagram.com/rubymaghoney/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <RiInstagramFill className={`hover:text-accent size-7`} />
-        </a>
-      </li>
-      <li>
-        <Show when="signed-in">
-            <UserButton />
-        </Show>
-      </li>
+      {/* Theme toggle */}
+      <label className={`swap hover:text-accent`}>
+        <input
+          type="checkbox"
+          className={`theme-controller`}
+          value="valentine"
+          checked={darkMode}
+          onClick={() => setDarkMode(!darkMode)}
+          readOnly
+        />
+        <IoSunny className={`swap-on size-7`} />
+        <IoMoon className={`swap-off size-7`} />
+      </label>
+      {/* Instagram */}
+      <a
+        href="https://instagram.com/rubymaghoney/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <RiInstagramFill className={`hover:text-accent size-7`} />
+      </a>
+      <Show when="signed-in">
+          <UserButton />
+      </Show>
     </>
 )}

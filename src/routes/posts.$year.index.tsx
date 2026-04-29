@@ -53,7 +53,7 @@ function RouteComponent() {
                         : "fish.jpeg"
                     }
                     alt={postData.post.title}
-                    className={`max-h-70 max-w-60 sm:max-w-80 md:max-w-90 ${postData.post.draft && "brightness-60 hover:brightness-100"}`}
+                    className={`max-h-70 max-w-70 sm:max-w-80 md:max-w-90 ${postData.post.draft && "brightness-60 hover:brightness-100"}`}
                   />
                 )}
                 <div className={`flex flex-col gap-8 text-xl md:text-3xl lg:text-4xl`}>
@@ -73,7 +73,7 @@ function RouteComponent() {
                         : "fish.jpeg"
                     }
                     alt={postData.post.title}
-                    className={`max-h-70 max-w-60 sm:max-w-80 md:max-w-90 ${postData.post.draft && "brightness-60 hover:brightness-100"}`}
+                    className={`max-h-70 max-w-70 sm:max-w-80 md:max-w-90 ${postData.post.draft && "brightness-60 hover:brightness-100"}`}
                   />
                 )}
               </motion.div>

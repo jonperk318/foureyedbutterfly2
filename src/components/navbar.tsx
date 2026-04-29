@@ -17,6 +17,7 @@ export const Navbar = () => {
   const activeProps = {
     className: `font-meno-banner-bold`,
   };
+
   return (
     <>
             <FadeInDiv initialDelay={0}>
@@ -54,7 +55,7 @@ export const Navbar = () => {
                     <li key={year}>
                       <Link
                         to={`/posts/${year}`}
-                        className={`text-primary`}
+                        className={`text-primary hover:text-accent`}
                         activeProps={activeProps}
                       >
                         {year}
@@ -79,7 +80,7 @@ export const Navbar = () => {
                     <li>
                       <Link
                         to="/create/media"
-                        className={`text-primary`}
+                        className={`text-secondary hover:text-accent`}
                         activeProps={activeProps}
                       >
                         Media
@@ -88,7 +89,7 @@ export const Navbar = () => {
                     <li>
                       <Link
                         to="/create/write"
-                        className={`text-primary`}
+                        className={`text-secondary hover:text-accent`}
                         activeProps={activeProps}
                       >
                         Write

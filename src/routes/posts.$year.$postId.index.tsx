@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
+import { Show } from "@clerk/react";
+import DOMPurify from 'dompurify';
 
 import Image from "../components/image";
 import { trpc } from "../router";
 import { NoResultsFound } from "../components/ui/no-results-found";
 import { dateToString } from "../utils/date-to-string";
-import { Show } from "@clerk/react";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { useAtom } from "jotai";
 import { writePostIdAtom } from "../lib/atoms";
@@ -56,7 +57,7 @@ function RouteComponent() {
                 return (
                   <div
                     className={`ql-editor`}
-                    dangerouslySetInnerHTML={{ __html: block.data }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(block.data).replaceAll("&nbsp;", " ") }}
                   />
                 );
               }

@@ -48,12 +48,23 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
         url: "/trpc",
         async headers() {
           try {
-            // First try to get token from tokenGetter (set by Wrap component)
             let token: string | null = null;
+            
+            // Try primary: tokenGetter set by Wrap component (most reliable)
             if (tokenGetter) {
               token = await tokenGetter();
-            } else {
-              // Fallback: get token directly from Clerk session
+            }
+            
+            // Fallback: use Clerk's client API
+            if (!token) {
+              const clerkClient = (window as any).Clerk;
+              if (clerkClient?.session) {
+                token = await clerkClient.session.getToken();
+              }
+            }
+            
+            // Final fallback: try __clerk internal API
+            if (!token) {
               token = await (window as any).__clerk?.session?.getToken?.();
             }
             
@@ -63,7 +74,7 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
               };
             }
           } catch (error) {
-            console.error("Failed to get token:", error);
+            console.warn("Failed to get auth token:", error);
           }
           return {};
         },

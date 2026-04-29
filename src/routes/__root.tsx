@@ -50,7 +50,7 @@ function RootComponent() {
           </div>
         </div>
         <div className="collapse-content lg:hidden z-1 bg-base-300 shadow-lg">
-          <ul className="menu menu-xl flex flex-col justify-center items-center w-full">
+          <ul className="menu menu-xl flex flex-col gap-4 justify-center items-center w-full">
             <NavbarMobile />
           </ul>
         </div>

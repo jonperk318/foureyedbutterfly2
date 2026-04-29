@@ -63,6 +63,18 @@ export const TextEditor = ({ index }: { index: number }) => {
           ],
         },
       }}
+      formats={[
+        "header",
+        "font",
+        "bold",
+        "italic",
+        "underline",
+        "link",
+        "list",
+        "color",
+        "background",
+        "align",
+      ]}
     />
   );
 };

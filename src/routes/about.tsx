@@ -34,7 +34,7 @@ function RouteComponent() {
           <div className={`hero-content flex-col lg:flex-row gap-16`}>
             <Image src="fish.jpeg" alt="Fish" className={`max-w-sm`} />
             <div>
-              <h1 className={`text-5xl text-primary`}>
+              <h1 className={`text-3xl md:text-4xl lg:text-5xl text-primary`}>
                 The four-eyed butterfly
               </h1>
               <p className={`pt-6`}>This is a blurb</p>
@@ -45,7 +45,7 @@ function RouteComponent() {
           <div className={`hero-content flex-col lg:flex-row-reverse gap-16`}>
             <Image src="bio-pic.jpg" alt="Bio Pic" />
             <div>
-              <h1 className={`text-5xl text-primary`}>About the Author</h1>
+              <h1 className={`text-3xl md:text-4xl lg:text-5xl text-primary`}>About the Author</h1>
               <p className={`pt-6 text-right`}>This is a blurb</p>
             </div>
           </div>

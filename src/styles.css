@@ -66,26 +66,36 @@
 }
 
 .ql-editor {
+  p:empty::after {
+    content: "\00A0";
+  }
   h1 {
     font-size: var(--text-2xl);
+    line-height: 2;
   }
   h2 {
     font-size: var(--text-xl);
+    line-height: 2.2;
   }
   h3 {
     font-size: var(--text-lg);
+    line-height: 2.4;
   }
   h4 {
     font-size: var(--text-base);
+    line-height: 2.6;
   }
   h5 {
     font-size: var(--text-sm);
+    line-height: 2.8;
   }
   h6 {
     font-size: var(--text-xs);
+    line-height: 3.0;
   }
   p {
     font-size: var(--text-base);
+    line-height: 2.6;
   }
 }
 

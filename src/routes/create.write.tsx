@@ -45,10 +45,19 @@ function RouteComponent() {
     }
   }, [])
 
+  const reset = () => {
+    setWritePostId(null);
+    setContent([]);
+    setTitle("");
+    setDate(undefined);
+    setDraft(false);
+  }
+
   const createPostMutation = useMutation(
     trpc.createPost.mutationOptions({
       onSuccess: (response) => {
         toast.success(`Post ${response.post.id} created successfully!`);
+        reset();
         const year = response.post.createdAt ? new Date(response.post.createdAt).getFullYear() : new Date().getFullYear();
         navigate({ to: `/posts/${year}/${response.post.id}` });
       },
@@ -59,6 +68,7 @@ function RouteComponent() {
     trpc.updatePost.mutationOptions({
       onSuccess: (response) => {
         toast.success(`Post ${response.post.id} updated successfully!`);
+        reset();
         postQuery.refetch();
         const year = response.post.createdAt ? new Date(response.post.createdAt).getFullYear() : date?.getFullYear();
         navigate({ to: `/posts/${year}/${response.post.id}` });
@@ -71,7 +81,7 @@ function RouteComponent() {
       onSuccess: (response) => {
         if (response.success) {
           toast.success(`Post ${writePostId} deleted successfully!`);
-          setWritePostId(null);
+          reset()
           navigate({ to: "/" });
         } else {
           toast.error(`Something went wrong deleting post ${writePostId}`);
@@ -114,13 +124,7 @@ function RouteComponent() {
                 <form method="dialog">
                   <button
                     className={`btn btn-warning btn-soft`}
-                    onClick={() => {
-                      setWritePostId(null);
-                      setContent([]);
-                      setTitle("");
-                      setDate(undefined);
-                      setDraft(false);
-                    }}
+                    onClick={() => reset()}
                   >
                     Reset page
                   </button>
@@ -270,7 +274,7 @@ function RouteComponent() {
         );
       })}
       <div
-        className={`flex flex-col md:flex-row justify-between items-center gap-4 h-12 pb-8`}
+        className={`flex flex-col md:flex-row justify-between items-center gap-4 pb-8`}
       >
         <fieldset className={`fieldset`}>
           <legend className="fieldset-legend ml-2 text-lg">Date</legend>
