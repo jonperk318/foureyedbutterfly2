@@ -15,7 +15,6 @@ type SelectMediaProps = {
 export const SelectMedia = ({ mediaType, index }: SelectMediaProps) => {
   const mediaQuery = useQuery({
     ...trpc.getAllMedia.queryOptions(),
-    refetchInterval: 1000 * 15,
   });
   const [content, setContent] = useAtom(writePostContentAtom);
 

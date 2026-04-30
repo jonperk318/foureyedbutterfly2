@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { Show } from "@clerk/react";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 import Image from "../components/image";
 import { trpc } from "../router";
@@ -29,9 +29,15 @@ function RouteComponent() {
   if (!postQuery.data) return <NoResultsFound />;
 
   return (
-    <div className={`flex flex-col gap-12 px-4 xs:px-8 sm:px-16 md:px-24 lg:px-48 py-16 max-w-6xl`}>
-      <div className={`text-4xl/16 md:text-5xl/20 lg:text-6xl/24`}>{postQuery.data.post.title}</div>
-      <div className={`text-4xl md:text-5xl lg:text-6xl font-royalty-free text-primary text-right pb-8`}>
+    <div
+      className={`flex flex-col gap-12 px-4 xs:px-8 sm:px-16 md:px-24 lg:px-48 py-16 max-w-6xl`}
+    >
+      <div className={`text-4xl/16 md:text-5xl/20 lg:text-6xl/24`}>
+        {postQuery.data.post.title}
+      </div>
+      <div
+        className={`text-4xl md:text-5xl lg:text-6xl font-royalty-free text-primary text-right pb-8`}
+      >
         {dateToString(postQuery.data.post.createdAt)}
       </div>
       {postQuery.data.post.draft && (
@@ -57,7 +63,12 @@ function RouteComponent() {
                 return (
                   <div
                     className={`ql-editor`}
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(block.data).replaceAll("&nbsp;", " ") }}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(block.data).replaceAll(
+                        "&nbsp;",
+                        " ",
+                      ),
+                    }}
                   />
                 );
               }
@@ -66,7 +77,9 @@ function RouteComponent() {
         </div>
       ))}
       {postQuery.data && (
-        <div className={`flex flex-col md:flex-row gap-4 w-full justify-between items-center`}>
+        <div
+          className={`flex flex-col md:flex-row gap-4 w-full justify-between items-center`}
+        >
           {postQuery.data.nextPost ? (
             <Link
               to={`/posts/${new Date(postQuery.data.nextPost.createdAt).getFullYear()}/${postQuery.data.nextPost.id}`}
@@ -77,17 +90,17 @@ function RouteComponent() {
           ) : (
             <div></div>
           )}
-            <Show when="signed-in">
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 1.05 }}>
-                <HiOutlinePencilAlt
-                  className={`size-10 hover:cursor-pointer text-primary`}
-                  onClick={() => {
-                    setWritePostId(postId);
-                    navigate({ to: "/create/write" })
-                  }}
-                />
-              </motion.div>
-            </Show>
+          <Show when="signed-in">
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 1.05 }}>
+              <HiOutlinePencilAlt
+                className={`size-10 hover:cursor-pointer text-primary`}
+                onClick={() => {
+                  setWritePostId(postId);
+                  navigate({ to: "/create/write" });
+                }}
+              />
+            </motion.div>
+          </Show>
           {postQuery.data.previousPost ? (
             <Link
               to={`/posts/${new Date(postQuery.data.previousPost.createdAt).getFullYear()}/${postQuery.data.previousPost.id}`}

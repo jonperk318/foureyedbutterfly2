@@ -19,12 +19,11 @@ export const Upload = () => {
   const [image, setImage] = useState<null | string>(null);
   const authParamsQuery = useQuery({
     ...trpc.uploadImageAuth.queryOptions(),
-    staleTime: 1000 * 60 * 60,
-  }); // 1 hour
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
   const mediaQuery = useQuery({
     ...trpc.getAllMedia.queryOptions(),
-    refetchInterval: 1000 * 15,
-  }); // 15 seconds
+  });
 
   const onImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {

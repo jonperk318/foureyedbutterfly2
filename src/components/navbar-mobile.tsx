@@ -7,7 +7,6 @@ import { useAtom } from "jotai/react";
 import { darkModeAtom } from "../lib/atoms";
 import { postYears } from "../routes/posts.index";
 
-
 export const NavbarMobile = () => {
   const [darkMode, setDarkMode] = useAtom(darkModeAtom);
   const { isSignedIn } = useAuth();
@@ -38,30 +37,36 @@ export const NavbarMobile = () => {
       </li>
       <li>
         <details>
-        <summary>
-          <Link to="/posts" activeProps={activeProps} className={`text-primary hover:text-accent`}>
-            Posts
-          </Link>
-        </summary>
-        <ul className={`p-2`} >
-          {postYears.map((year) => (
-            <li key={year}>
-              <Link
-                to={`/posts/${year}`}
-                className={`text-primary hover:text-accent`}
-                activeProps={activeProps}
-              >
-                {year}
-              </Link>
-            </li>
-          ))}
-        </ul>
+          <summary>
+            <Link
+              to="/posts"
+              activeProps={activeProps}
+              className={`text-primary hover:text-accent`}
+            >
+              Posts
+            </Link>
+          </summary>
+          <ul className={`p-2`}>
+            {postYears.map((year) => (
+              <li key={year}>
+                <Link
+                  to={`/posts/${year}`}
+                  className={`text-primary hover:text-accent`}
+                  activeProps={activeProps}
+                >
+                  {year}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </details>
       </li>
       <li>
         {isSignedIn ? (
           <details>
-            <summary className={`text-secondary hover:text-accent`}>Create</summary>
+            <summary className={`text-secondary hover:text-accent`}>
+              Create
+            </summary>
             <ul className={`p-2`}>
               <li>
                 <Link
@@ -115,7 +120,8 @@ export const NavbarMobile = () => {
         <RiInstagramFill className={`hover:text-accent size-7`} />
       </a>
       <Show when="signed-in">
-          <UserButton />
+        <UserButton />
       </Show>
     </>
-)}
+  );
+};

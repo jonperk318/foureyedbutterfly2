@@ -7,4 +7,4 @@ export const darkModeAtom = atomWithStorage("darkMode", false);
 
 export const writePostIdAtom = atom<string | null>(null);
 export type PostContent = Omit<typeof postContent.$inferSelect, "postId">[];
-export const writePostContentAtom = atom<PostContent>([])
+export const writePostContentAtom = atom<PostContent>([]);

@@ -91,7 +91,7 @@
   }
   h6 {
     font-size: var(--text-xs);
-    line-height: 3.0;
+    line-height: 3;
   }
   p {
     font-size: var(--text-base);

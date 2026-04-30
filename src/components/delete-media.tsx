@@ -10,7 +10,7 @@ import Image from "./image";
 export const DeleteMedia = () => {
   const mediaQuery = useQuery({
     ...trpc.getAllMedia.queryOptions(),
-    refetchInterval: 1000 * 15,
+    refetchInterval: 1000 * 60, // 1 minute
   });
   const deleteMediaMutation = useMutation(trpc.deleteMedia.mutationOptions());
 

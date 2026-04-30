@@ -16,7 +16,7 @@ import { Spinner } from "./components/ui/spinner";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60, // 1 minute
+      staleTime: 1000 * 60 * 60 * 3, // 3 hours
     },
     mutations: {
       onError: (error: any) => {
@@ -49,12 +49,12 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
         async headers() {
           try {
             let token: string | null = null;
-            
+
             // Try primary: tokenGetter set by Wrap component (most reliable)
             if (tokenGetter) {
               token = await tokenGetter();
             }
-            
+
             // Fallback: use Clerk's client API
             if (!token) {
               const clerkClient = (window as any).Clerk;
@@ -62,12 +62,12 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
                 token = await clerkClient.session.getToken();
               }
             }
-            
+
             // Final fallback: try __clerk internal API
             if (!token) {
               token = await (window as any).__clerk?.session?.getToken?.();
             }
-            
+
             if (token) {
               return {
                 Authorization: `Bearer ${token}`,

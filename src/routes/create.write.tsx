@@ -43,7 +43,7 @@ function RouteComponent() {
     if (postQuery?.data?.content) {
       setContent(postQuery.data.content);
     }
-  }, [])
+  }, []);
 
   const reset = () => {
     setWritePostId(null);
@@ -51,14 +51,16 @@ function RouteComponent() {
     setTitle("");
     setDate(undefined);
     setDraft(false);
-  }
+  };
 
   const createPostMutation = useMutation(
     trpc.createPost.mutationOptions({
       onSuccess: (response) => {
         toast.success(`Post ${response.post.id} created successfully!`);
         reset();
-        const year = response.post.createdAt ? new Date(response.post.createdAt).getFullYear() : new Date().getFullYear();
+        const year = response.post.createdAt
+          ? new Date(response.post.createdAt).getFullYear()
+          : new Date().getFullYear();
         navigate({ to: `/posts/${year}/${response.post.id}` });
       },
     }),
@@ -70,7 +72,9 @@ function RouteComponent() {
         toast.success(`Post ${response.post.id} updated successfully!`);
         reset();
         postQuery.refetch();
-        const year = response.post.createdAt ? new Date(response.post.createdAt).getFullYear() : date?.getFullYear();
+        const year = response.post.createdAt
+          ? new Date(response.post.createdAt).getFullYear()
+          : date?.getFullYear();
         navigate({ to: `/posts/${year}/${response.post.id}` });
       },
     }),
@@ -81,23 +85,25 @@ function RouteComponent() {
       onSuccess: (response) => {
         if (response.success) {
           toast.success(`Post ${writePostId} deleted successfully!`);
-          reset()
+          reset();
           navigate({ to: "/" });
         } else {
           toast.error(`Something went wrong deleting post ${writePostId}`);
         }
-      }
-    })
+      },
+    }),
   );
 
   const memoizedContent = useMemo(() => content, [content]);
 
-  if (postQuery.isPending) return <Spinner />
+  if (postQuery.isPending) return <Spinner />;
 
   return (
     <>
       <div className={`flex flex-col gap-8`}>
-        <div className={`flex flex-col sm:flex-row justify-between items-center gap-4`}>
+        <div
+          className={`flex flex-col sm:flex-row justify-between items-center gap-4`}
+        >
           <button
             className={`btn btn-primary btn-soft`}
             onClick={() =>
@@ -115,11 +121,7 @@ function RouteComponent() {
               </h1>
               <div className={`modal-action`}>
                 <form method="dialog">
-                  <button
-                    className={`btn btn-soft`}
-                  >
-                    Cancel
-                  </button>
+                  <button className={`btn btn-soft`}>Cancel</button>
                 </form>
                 <form method="dialog">
                   <button
@@ -144,15 +146,12 @@ function RouteComponent() {
           <dialog id="delete-post-modal" className={`modal`}>
             <div className={`modal-box ring-error ring-2`}>
               <h1 className={`font-bold text-lg text-error`}>
-                Are you sure you want to delete this post? This cannot be undone!
+                Are you sure you want to delete this post? This cannot be
+                undone!
               </h1>
               <div className={`modal-action`}>
                 <form method="dialog">
-                  <button
-                    className={`btn btn-soft`}
-                  >
-                    Cancel
-                  </button>
+                  <button className={`btn btn-soft`}>Cancel</button>
                 </form>
                 <form method="dialog">
                   <button
@@ -317,16 +316,26 @@ function RouteComponent() {
         <button
           className={`btn btn-primary`}
           onClick={() => {
-            const submittedContent = content.map(block => ({contentType: block.contentType ? block.contentType : "text", data: block.data }));
+            const submittedContent = content.map((block) => ({
+              contentType: block.contentType ? block.contentType : "text",
+              data: block.data,
+            }));
             if (writePostId && postQuery.data) {
               const thing = {
                 id: postQuery.data.post.id,
-                ...(title !== postQuery.data?.post.title && {title: title || "Untitled"}),
-                ...(draft !== postQuery.data?.post.draft && {draft}),
-                ...(submittedContent !== postQuery.data?.content && {content: submittedContent}),
-                ...(postQuery.data.post.createdAt && date !== new Date(postQuery.data?.post.createdAt) && { createdAt: date ? String(date) : undefined }),
-              }
-              console.log(thing)
+                ...(title !== postQuery.data?.post.title && {
+                  title: title || "Untitled",
+                }),
+                ...(draft !== postQuery.data?.post.draft && { draft }),
+                ...(submittedContent !== postQuery.data?.content && {
+                  content: submittedContent,
+                }),
+                ...(postQuery.data.post.createdAt &&
+                  date !== new Date(postQuery.data?.post.createdAt) && {
+                    createdAt: date ? String(date) : undefined,
+                  }),
+              };
+              console.log(thing);
               updatePostMutation.mutate(thing);
             } else {
               createPostMutation.mutate({
@@ -334,10 +343,14 @@ function RouteComponent() {
                 draft,
                 content: submittedContent,
                 createdAt: date ? String(date) : undefined,
-              })
+              });
             }
           }}
-          disabled={!title || createPostMutation.isPending || updatePostMutation.isPending}
+          disabled={
+            !title ||
+            createPostMutation.isPending ||
+            updatePostMutation.isPending
+          }
         >
           <IoIosSend className={`size-7`} />
           {createPostMutation.isPending || updatePostMutation.isPending ? (

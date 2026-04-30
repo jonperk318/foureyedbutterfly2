@@ -56,7 +56,9 @@ function RouteComponent() {
                     className={`max-h-70 max-w-70 sm:max-w-80 md:max-w-90 ${postData.post.draft && "brightness-60 hover:brightness-100"}`}
                   />
                 )}
-                <div className={`flex flex-col gap-8 text-xl md:text-3xl lg:text-4xl`}>
+                <div
+                  className={`flex flex-col gap-8 text-xl md:text-3xl lg:text-4xl`}
+                >
                   <h1 className={`text-primary`}>{postData.post.title}</h1>
                   <span className={`font-royalty-free`}>
                     {dateToString(postData.post.createdAt)}

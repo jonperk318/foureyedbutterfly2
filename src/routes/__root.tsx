@@ -29,21 +29,33 @@ function RootComponent() {
 
   return (
     <>
-      <div className={`min-h-screen bg-base-100 font-meno-banner max-lg:collapse`}>
+      <div
+        className={`min-h-screen bg-base-100 font-meno-banner max-lg:collapse`}
+      >
         <input id="navbar-1-toggle" className="peer hidden" type="checkbox" />
-        <label htmlFor="navbar-1-toggle" className="fixed inset-0 hidden max-lg:peer-checked:block"></label>
-        <div className={`collapse-title navbar h-30 bg-base-200 py-4 px-8 shadow-lg z-20`}>
+        <label
+          htmlFor="navbar-1-toggle"
+          className="fixed inset-0 hidden max-lg:peer-checked:block"
+        ></label>
+        <div
+          className={`collapse-title navbar h-30 bg-base-200 py-4 px-8 shadow-lg z-20`}
+        >
           <div className={`navbar-start`}>
             <div className={`font-royalty-free text-3xl sm:text-4xl`}>
               Four Eyed Butterfly
             </div>
           </div>
-          <div className={`navbar-end hidden lg:flex gap-12 flex-none items-center`}>
+          <div
+            className={`navbar-end hidden lg:flex gap-12 flex-none items-center`}
+          >
             <Navbar />
           </div>
           <div className={`navbar-end lg:hidden`}>
             <div className={`dropdown`}>
-              <label htmlFor="navbar-1-toggle" className="btn btn-lg btn-ghost lg:hidden">
+              <label
+                htmlFor="navbar-1-toggle"
+                className="btn btn-lg btn-ghost lg:hidden"
+              >
                 <IoMenu className={`size-12`} />
               </label>
             </div>
@@ -56,8 +68,12 @@ function RootComponent() {
         </div>
         {isFetching ? <div className={`loading-spinner`}></div> : <Outlet />}
       </div>
-      <TanStackRouterDevtools position="bottom-left" />
-      <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
+      {!Boolean(import.meta.env.VITE_DEV) && (
+        <TanStackRouterDevtools position="bottom-left" />
+      )}
+      {!Boolean(import.meta.env.VITE_DEV) && (
+        <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
+      )}
     </>
   );
 }

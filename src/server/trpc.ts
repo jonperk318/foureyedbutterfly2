@@ -175,7 +175,7 @@ export const appRouter = t.router({
   getPost: t.procedure
     .input(z.union([z.string(), z.number(), z.null()]))
     .query(async (opts) => {
-      if (opts.input === null) return null
+      if (opts.input === null) return null;
       const postId =
         typeof opts.input === "string" ? parseInt(opts.input, 10) : opts.input;
 
@@ -262,7 +262,9 @@ export const appRouter = t.router({
     )
     .mutation(async (opts) => {
       await verifyAuth(opts.ctx.req);
-      const createdAt = opts.input.createdAt ? new Date(opts.input.createdAt) : undefined
+      const createdAt = opts.input.createdAt
+        ? new Date(opts.input.createdAt)
+        : undefined;
 
       const [newPost] = await db
         .insert(posts)
@@ -324,7 +326,12 @@ export const appRouter = t.router({
 
       const updatedPost = await db
         .update(posts)
-        .set({...postUpdates, createdAt: opts.input.createdAt ? new Date(opts.input.createdAt) : undefined })
+        .set({
+          ...postUpdates,
+          createdAt: opts.input.createdAt
+            ? new Date(opts.input.createdAt)
+            : undefined,
+        })
         .where(eq(posts.id, id))
         .returning();
 

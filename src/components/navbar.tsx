@@ -8,7 +8,6 @@ import { darkModeAtom } from "../lib/atoms";
 import FadeInDiv from "../components/fade-in-div";
 import { postYears } from "../routes/posts.index";
 
-
 export const Navbar = () => {
   const [darkMode, setDarkMode] = useAtom(darkModeAtom);
   const { isSignedIn } = useAuth();
@@ -20,124 +19,125 @@ export const Navbar = () => {
 
   return (
     <>
-            <FadeInDiv initialDelay={0}>
-              <Link
-                className={`text-primary hover:text-accent`}
-                to="/"
-                activeProps={activeProps}
-              >
-                Home
-              </Link>
-            </FadeInDiv>
-            <FadeInDiv initialDelay={fadeInInterval}>
-              <Link
-                className={`text-primary hover:text-accent`}
-                to="/about"
-                activeProps={activeProps}
-              >
-                About
-              </Link>
-            </FadeInDiv>
-            <FadeInDiv initialDelay={fadeInInterval * 2}>
-              <div
-                className={`text-primary hover:text-accent dropdown dropdown-hover dropdown-center`}
-              >
-                <div role="button" className={`cursor-pointer my-2`}>
-                  <Link to="/posts" activeProps={activeProps}>
-                    Posts
-                  </Link>
-                </div>
-                <ul
-                  tabIndex={-1}
-                  className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-20 shadow`}
-                >
-                  {postYears.map((year) => (
-                    <li key={year}>
-                      <Link
-                        to={`/posts/${year}`}
-                        className={`text-primary hover:text-accent`}
-                        activeProps={activeProps}
-                      >
-                        {year}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </FadeInDiv>
-            {isSignedIn ? (
-              <FadeInDiv initialDelay={fadeInInterval * 6}>
-                <div
-                  className={`text-secondary hover:text-accent dropdown dropdown-hover dropdown-center`}
-                >
-                  <div role="button" className={`cursor-pointer my-2`}>
-                    Create
-                  </div>
-                  <ul
-                    tabIndex={-1}
-                    className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-24 shadow`}
-                  >
-                    <li>
-                      <Link
-                        to="/create/media"
-                        className={`text-secondary hover:text-accent`}
-                        activeProps={activeProps}
-                      >
-                        Media
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/create/write"
-                        className={`text-secondary hover:text-accent`}
-                        activeProps={activeProps}
-                      >
-                        Write
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </FadeInDiv>
-            ) : (
-              <FadeInDiv initialDelay={fadeInInterval * 6}>
+      <FadeInDiv initialDelay={0}>
+        <Link
+          className={`text-primary hover:text-accent`}
+          to="/"
+          activeProps={activeProps}
+        >
+          Home
+        </Link>
+      </FadeInDiv>
+      <FadeInDiv initialDelay={fadeInInterval}>
+        <Link
+          className={`text-primary hover:text-accent`}
+          to="/about"
+          activeProps={activeProps}
+        >
+          About
+        </Link>
+      </FadeInDiv>
+      <FadeInDiv initialDelay={fadeInInterval * 2}>
+        <div
+          className={`text-primary hover:text-accent dropdown dropdown-hover dropdown-center`}
+        >
+          <div role="button" className={`cursor-pointer my-2`}>
+            <Link to="/posts" activeProps={activeProps}>
+              Posts
+            </Link>
+          </div>
+          <ul
+            tabIndex={-1}
+            className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-20 shadow`}
+          >
+            {postYears.map((year) => (
+              <li key={year}>
                 <Link
-                  className={`text-secondary hover:text-accent`}
-                  to="/login"
+                  to={`/posts/${year}`}
+                  className={`text-primary hover:text-accent`}
                   activeProps={activeProps}
                 >
-                  Login
+                  {year}
                 </Link>
-              </FadeInDiv>
-            )}
-            {/* Theme toggle */}
-            <FadeInDiv initialDelay={fadeInInterval * 10}>
-              <label className={`swap hover:text-accent`}>
-                <input
-                  type="checkbox"
-                  className={`theme-controller`}
-                  value="valentine"
-                  checked={darkMode}
-                  onClick={() => setDarkMode(!darkMode)}
-                  readOnly
-                />
-                <IoSunny className={`swap-on size-7`} />
-                <IoMoon className={`swap-off size-7`} />
-              </label>
-            </FadeInDiv>
-            {/* Instagram */}
-            <FadeInDiv initialDelay={fadeInInterval * 11}>
-              <a
-                href="https://instagram.com/rubymaghoney/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <RiInstagramFill className={`hover:text-accent size-7`} />
-              </a>
-            </FadeInDiv>
-            <Show when="signed-in">
-              <FadeInDiv>
-                <UserButton />
-              </FadeInDiv>
-            </Show>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </FadeInDiv>
+      {isSignedIn ? (
+        <FadeInDiv initialDelay={fadeInInterval * 6}>
+          <div
+            className={`text-secondary hover:text-accent dropdown dropdown-hover dropdown-center`}
+          >
+            <div role="button" className={`cursor-pointer my-2`}>
+              Create
+            </div>
+            <ul
+              tabIndex={-1}
+              className={`dropdown-content menu z-1 bg-base-300 rounded-box p-2 w-24 shadow`}
+            >
+              <li>
+                <Link
+                  to="/create/media"
+                  className={`text-secondary hover:text-accent`}
+                  activeProps={activeProps}
+                >
+                  Media
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/create/write"
+                  className={`text-secondary hover:text-accent`}
+                  activeProps={activeProps}
+                >
+                  Write
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </FadeInDiv>
+      ) : (
+        <FadeInDiv initialDelay={fadeInInterval * 6}>
+          <Link
+            className={`text-secondary hover:text-accent`}
+            to="/login"
+            activeProps={activeProps}
+          >
+            Login
+          </Link>
+        </FadeInDiv>
+      )}
+      {/* Theme toggle */}
+      <FadeInDiv initialDelay={fadeInInterval * 10}>
+        <label className={`swap hover:text-accent`}>
+          <input
+            type="checkbox"
+            className={`theme-controller`}
+            value="valentine"
+            checked={darkMode}
+            onClick={() => setDarkMode(!darkMode)}
+            readOnly
+          />
+          <IoSunny className={`swap-on size-7`} />
+          <IoMoon className={`swap-off size-7`} />
+        </label>
+      </FadeInDiv>
+      {/* Instagram */}
+      <FadeInDiv initialDelay={fadeInInterval * 11}>
+        <a
+          href="https://instagram.com/rubymaghoney/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <RiInstagramFill className={`hover:text-accent size-7`} />
+        </a>
+      </FadeInDiv>
+      <Show when="signed-in">
+        <FadeInDiv>
+          <UserButton />
+        </FadeInDiv>
+      </Show>
     </>
-)}
+  );
+};
