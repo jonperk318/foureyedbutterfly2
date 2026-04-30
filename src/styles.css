@@ -60,7 +60,6 @@
   --clerk-color-input-foreground: var(--color-base-content);
   --clerk-color-ring: var(--color-secondary);
   --clerk-color-shimmer: var(--color-accent);
-  --clerk-color-modal-backdrop: var(--color-base-100/50);
   --clerk-border-radius: 0.375rem;
   --clerk-spacing: 1rem;
 }

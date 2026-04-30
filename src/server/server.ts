@@ -15,7 +15,7 @@ const HMR_PORT =
     ? parseInt(process.env.HMR_PORT, 10)
     : 3001;
 
-const isTest = process.env.DEV === "true" || !!process.env.VITE_TEST_BUILD;
+const isTest = process.env.NODE_ENV === "test" || !!process.env.VITE_TEST_BUILD;
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
