@@ -98,30 +98,36 @@ export const NavbarMobile = () => {
           </Link>
         )}
       </li>
-      {/* Theme toggle */}
-      <label className={`swap hover:text-accent`}>
-        <input
-          type="checkbox"
-          className={`theme-controller`}
-          value="valentine"
-          checked={darkMode}
-          onClick={() => setDarkMode(!darkMode)}
-          readOnly
-        />
-        <IoSunny className={`swap-on size-7`} />
-        <IoMoon className={`swap-off size-7`} />
-      </label>
+      <li className={`btn-ghost`}>
+        {/* Theme toggle */}
+        <label className={`swap hover:text-accent`}>
+          <input
+            type="checkbox"
+            className={`theme-controller`}
+            value="valentine"
+            checked={darkMode}
+            onClick={() => setDarkMode(!darkMode)}
+            readOnly
+          />
+          <IoSunny className={`swap-on size-7`} />
+          <IoMoon className={`swap-off size-7`} />
+        </label>
+      </li>
       {/* Instagram */}
-      <a
-        href="https://instagram.com/rubymaghoney/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <RiInstagramFill className={`hover:text-accent size-7`} />
-      </a>
-      <Show when="signed-in">
-        <UserButton />
-      </Show>
+      <li>
+        <a
+          href="https://instagram.com/rubymaghoney/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <RiInstagramFill className={`hover:text-accent size-7`} />
+        </a>
+      </li>
+      <li>
+        <Show when="signed-in">
+          <UserButton />
+        </Show>
+      </li>
     </>
   );
 };

@@ -31,7 +31,7 @@ function RouteComponent() {
       </div>
       <div className={`flex flex-col items-center justify-center gap-4`}>
         <div className={`hero min-h-120`}>
-          <div className={`hero-content flex-col lg:flex-row gap-16`}>
+          <div className={`hero-content flex-col lg:flex-row gap-16 m-8`}>
             <Image src="fish.jpeg" alt="Fish" className={`max-w-sm`} />
             <div>
               <h1 className={`text-3xl md:text-4xl lg:text-5xl text-primary`}>
@@ -44,7 +44,7 @@ function RouteComponent() {
           </div>
         </div>
         <div className={`hero min-h-120 bg-base-200`}>
-          <div className={`hero-content flex-col lg:flex-row-reverse gap-16`}>
+          <div className={`hero-content flex-col lg:flex-row-reverse gap-16 m-8`}>
             <Image
               src="bio-pic.jpg"
               alt="Bio Pic"
